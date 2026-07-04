@@ -5,7 +5,9 @@ import { PORT } from './config';
 import cors from 'cors';
 import path from "path";
 import  authRoutes  from './routes/Auth/auth.routes';
-
+import jobRoutes from './routes/PostJob/job.routes';
+import companyRoutes from './routes/company/company.routes';
+import salaryRoutes from './routes/salaryexplorer/salary.route';
 const app: Application = express();
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(
@@ -22,7 +24,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
-
-
+app.use("/api/jobs", jobRoutes);
+app.use("/api/companies", companyRoutes);
+app.use("/api/salary-explorer", salaryRoutes);
 
 export default app;
