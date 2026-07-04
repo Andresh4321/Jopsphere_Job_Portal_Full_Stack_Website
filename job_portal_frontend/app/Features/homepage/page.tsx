@@ -1,5 +1,7 @@
+"use client";
+import Link from "next/link";
 import React, { useState } from "react";
-
+import Register from "../../Features/Register/page";
 const KaamIcon = () => (
   <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
     <rect width="38" height="38" rx="12" fill="#6D4AFF" />
@@ -86,11 +88,23 @@ export default function HomePage() {
           ))}
         </nav>
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <a href="#" style={{ fontSize: 15, color: "#171717", textDecoration: "none" }}>Sign in</a>
-          <button style={{
-            background: "#6D4AFF", color: "#fff", border: "none",
-            borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
-          }}>Post a Job</button>
+          <a href="/Features/Register" style={{ fontSize: 15, color: "#171717", textDecoration: "none" }}>Sign up</a>
+          <Link href="/Features/login">
+  <button
+    style={{
+      background: "#6D4AFF",
+      color: "#fff",
+      border: "none",
+      borderRadius: 8,
+      padding: "10px 20px",
+      fontSize: 14,
+      fontWeight: 600,
+      cursor: "pointer",
+    }}
+  >
+    Log In
+  </button>
+</Link>
         </div>
       </header>
 
