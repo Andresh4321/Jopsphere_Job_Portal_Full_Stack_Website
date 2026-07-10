@@ -4,7 +4,7 @@ export interface MyCompany {
   industry: string;
   headquarters: string;
   companyWebsite: string;
-  status: "unverified" | "verified";
+  status: 'unverified' | 'verified';
 }
 
 export interface PublicCompanyProfile {
@@ -15,7 +15,7 @@ export interface PublicCompanyProfile {
   companyWebsite: string;
   aboutCompany: string;
   whyChooseUs: string;
-  status: "unverified" | "verified";
+  status: 'unverified' | 'verified';
   createdAt: string;
 }
 
