@@ -1,13 +1,31 @@
 import { PostedJobModel, IPostedJob } from "../../models/PostJob/postedjob.model";
-import { CompanyModel } from "../../models/auth/company.model";
+
 import { CreateJobDto, UpdateJobDto, JobResponseDto } from "../../dtos/PostJob/job.dto";
 import { HttpError } from "../../errors/http_error";
 import { JobStatus } from "../../types/PostJob/job.type";
-import { Types } from "mongoose";
+import { Types, PipelineStage } from "mongoose";
+import { VerificationStatus } from "../../types/Auth/auth.type";
+import { CompanyModel, ICompany } from "../../models/auth/company.model";
+import { JobListItemDto } from "../../dtos/PostJob/job.dto";
 
-const toResponseDto = (job: IPostedJob): JobResponseDto => ({
+
+
+// Accepts a job whose companyRef has been populated with at least
+// companyId/companyName/status — every method below populates it that way
+// before calling this, so the shape is consistent everywhere.
+type PopulatedJob = Omit<IPostedJob, "companyRef"> & {
+  _id: Types.ObjectId;
+  companyRef: Pick<ICompany, "companyId" | "companyName" | "status">;
+};
+
+const toResponseDto = (job: PopulatedJob): JobResponseDto => ({
   id: job._id.toString(),
   companyId: job.companyId,
+  company: {
+    companyId: job.companyRef.companyId,
+    companyName: job.companyRef.companyName,
+    companyVerified: job.companyRef.status === VerificationStatus.VERIFIED,
+  },
   jobTitle: job.jobTitle,
   department: job.department,
   workType: job.workType,
@@ -24,6 +42,8 @@ const toResponseDto = (job: IPostedJob): JobResponseDto => ({
   createdAt: job.createdAt,
   updatedAt: job.updatedAt,
 });
+
+const COMPANY_POPULATE_FIELDS = "companyId companyName status";
 
 const validateRequiredFields = (dto: CreateJobDto) => {
   const requiredStringFields: (keyof CreateJobDto)[] = [
@@ -105,29 +125,83 @@ export const jobService = {
       status: JobStatus.OPEN,
     });
 
-    return toResponseDto(job);
+    return toResponseDto({ ...job.toObject(), companyRef: company } as unknown as PopulatedJob);
   },
 
   async getJobById(jobId: string): Promise<JobResponseDto> {
-    const job = await PostedJobModel.findById(jobId);
+    const job = await PostedJobModel.findById(jobId).populate(
+      "companyRef",
+      COMPANY_POPULATE_FIELDS
+    );
     if (!job) {
       throw new HttpError(404, "Job not found.");
     }
-    return toResponseDto(job);
+    return toResponseDto(job as unknown as PopulatedJob);
   },
 
   async getJobsByCompany(companyId: string): Promise<JobResponseDto[]> {
-    const jobs = await PostedJobModel.find({ companyId }).sort({ createdAt: -1 });
-    return jobs.map(toResponseDto);
+    const jobs = await PostedJobModel.find({ companyId })
+      .populate("companyRef", COMPANY_POPULATE_FIELDS)
+      .sort({ createdAt: -1 });
+    return jobs.map((job) => toResponseDto(job as unknown as PopulatedJob));
   },
 
-  async listAllJobs(filters: { status?: JobStatus; workType?: string } = {}): Promise<JobResponseDto[]> {
-    const query: Record<string, unknown> = {};
-    if (filters.status) query.status = filters.status;
-    if (filters.workType) query.workType = filters.workType;
+  async listAllJobs(filters: {
+    status?: JobStatus;
+    workType?: string;
+    minSalary?: number;
+    verifiedOnly?: boolean;
+    sort?: "newest" | "salary_desc";
+  } = {}): Promise<JobListItemDto[]> {
+    const match: Record<string, unknown> = {
+      status: filters.status ?? JobStatus.OPEN, // public listing shows open jobs by default
+    };
+    if (filters.workType) match.workType = filters.workType;
+    if (filters.minSalary) match["salary.max"] = { $gte: filters.minSalary };
 
-    const jobs = await PostedJobModel.find(query).sort({ createdAt: -1 });
-    return jobs.map(toResponseDto);
+    const pipeline: PipelineStage[] = [
+      { $match: match },
+      {
+        $lookup: {
+          from: "companies",
+          localField: "companyRef",
+          foreignField: "_id",
+          as: "company",
+        },
+      },
+      { $unwind: "$company" },
+    ];
+
+    if (filters.verifiedOnly) {
+      pipeline.push({ $match: { "company.status": VerificationStatus.VERIFIED } });
+    }
+
+    pipeline.push({
+      $project: {
+        _id: 0,
+        id: { $toString: "$_id" },
+        companyId: 1,
+        companyName: "$company.companyName",
+        companyVerified: { $eq: ["$company.status", VerificationStatus.VERIFIED] },
+        jobTitle: 1,
+        department: 1,
+        workType: 1,
+        location: 1,
+        hoursPerWeek: 1,
+        applicationDeadline: 1,
+        salary: 1,
+        skills: 1,
+        listingType: 1,
+        status: 1,
+        createdAt: 1,
+      },
+    });
+
+    pipeline.push({
+      $sort: filters.sort === "salary_desc" ? { "salary.max": -1 } : { createdAt: -1 },
+    });
+
+    return PostedJobModel.aggregate(pipeline) as Promise<JobListItemDto[]>;
   },
 
   async updateJob(jobId: string, dto: UpdateJobDto, employerId: string): Promise<JobResponseDto> {
@@ -159,7 +233,8 @@ export const jobService = {
     if (dto.status) job.status = dto.status;
 
     await job.save();
-    return toResponseDto(job);
+    await job.populate("companyRef", COMPANY_POPULATE_FIELDS);
+    return toResponseDto(job as unknown as PopulatedJob);
   },
 
   async closeJob(jobId: string, employerId: string): Promise<JobResponseDto> {
