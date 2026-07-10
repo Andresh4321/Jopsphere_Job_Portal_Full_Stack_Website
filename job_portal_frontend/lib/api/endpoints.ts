@@ -1,6 +1,5 @@
 // Central place for every backend route the frontend calls.
-// Keeps raw URL strings out of api/*.ts files — if a backend route
-// changes, this is the only file that needs updating.
+// If a backend route changes, this is the only file that needs updating.
 
 export const AUTH_ENDPOINTS = {
   REGISTER_JOB_SEEKER: "/api/auth/register/job-seeker",
@@ -10,31 +9,28 @@ export const AUTH_ENDPOINTS = {
 
 export const JOB_ENDPOINTS = {
   CREATE: "/api/jobs",
-  LIST_ALL: "/api/jobs", // supports ?status=&workType= query params
+  LIST_ALL: "/api/jobs", // supports ?status=&workType=&minSalary=&verifiedOnly=&sort= query params
   LIST_BY_COMPANY: (companyId: string) => `/api/jobs/company/${companyId}`,
   GET_BY_ID: (jobId: string) => `/api/jobs/${jobId}`,
   UPDATE: (jobId: string) => `/api/jobs/${jobId}`,
   CLOSE: (jobId: string) => `/api/jobs/${jobId}/close`,
-};
-
-// Not implemented on the backend yet — reserved names so the frontend
-// can already reference them; wire these up once the routes exist.
-export const APPLICATION_ENDPOINTS = {
-  APPLY: (jobId: string) => `/api/jobs/${jobId}/applications`,
-  LIST_APPLICANTS: (jobId: string) => `/api/jobs/${jobId}/applications`,
-  UPDATE_STAGE: (applicationId: string) => `/api/applications/${applicationId}/stage`,
+  DELETE: (jobId: string) => `/api/jobs/${jobId}`,
 };
 
 export const COMPANY_ENDPOINTS = {
-  ME: "/api/companies/me",
-  GET_BY_ID: (companyId: string) => `/api/companies/${companyId}`,
+  ME: "/api/companies/me", // employer-only, requires auth
+  GET_BY_ID: (companyId: string) => `/api/companies/${companyId}`, // public
 };
 
-// Central place for every backend route the frontend calls.
-// Keeps raw URL strings out of api/*.ts files — if a backend route
-// changes, this is the only file that needs updating.
-
-
 export const SALARY_ENDPOINTS = {
-  EXPLORER: "/api/salary-explorer",
+  EXPLORER: "/api/salary-explorer", // public
+};
+
+export const APPLICATION_ENDPOINTS = {
+  APPLY: (jobId: string) => `/api/jobs/${jobId}/apply`, // job_seeker-only
+  MY_APPLICATIONS: "/api/applications/me", // job_seeker-only
+  APPLICANTS_FOR_JOB: (jobId: string) => `/api/jobs/${jobId}/applicants`, // employer-only, must own the job
+  APPLICANTS_FOR_EMPLOYER: "/api/applicants/me", // employer-only, across all their jobs
+  STAGE_COUNTS: "/api/applicants/stats", // employer-only
+  UPDATE_STAGE: (applicationId: string) => `/api/applications/${applicationId}/stage`, // employer-only, must own the job
 };
