@@ -126,7 +126,7 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-[#8A8A8A] mt-8">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="font-semibold text-[#6D4AFF] hover:text-[#5F3CF0] transition-colors">
+        <Link href="/Features/Register" className="font-semibold text-[#6D4AFF] hover:text-[#5F3CF0] transition-colors">
           Register
         </Link>
       </p>
