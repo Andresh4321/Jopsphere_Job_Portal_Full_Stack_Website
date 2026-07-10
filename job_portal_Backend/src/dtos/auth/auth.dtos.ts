@@ -11,6 +11,8 @@ export interface RegisterJobSeekerDto {
   fullName: string;
   topSkills: string[] | string; // exactly 3 skills
   aboutYourself: string;
+  preferredLocation?: string;
+  preferredWorkType?: string;
 }
 
 // ---------- Register: Employer ----------
@@ -56,6 +58,8 @@ export interface RegisterJobSeekerResponseDto {
   topSkills: string[];
   aboutYourself: string;
   qualificationImages: string[];
+  preferredLocation?: string;
+  preferredWorkType?: string;
 }
 
 export interface RegisterEmployerResponseDto {
