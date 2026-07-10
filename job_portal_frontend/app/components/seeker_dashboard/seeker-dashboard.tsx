@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   MapPin,
   TrendingUp,
@@ -8,7 +9,7 @@ import {
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
-// Types — exported so pages (or an employer variant) can build matching data
+// Types
 // ---------------------------------------------------------------------------
 
 export interface DashboardStat {
@@ -20,6 +21,7 @@ export interface DashboardStat {
 export type ApplicationStatus = "Interview" | "Viewed" | "Applied" | "Offer";
 
 export interface ApplicationItem {
+  jobId: string; // added: needed to link each row to its job profile
   title: string;
   company: string;
   appliedAgo: string;
@@ -27,11 +29,13 @@ export interface ApplicationItem {
 }
 
 export interface RecommendedJob {
+  jobId: string; // added: needed to link each card to its job profile
   title: string;
   company: string;
   location: string;
   salary: string;
   match: number;
+  verified?: boolean;
 }
 
 export interface SeekerDashboardProps {
@@ -65,58 +69,21 @@ export const DEFAULT_SEEKER_DASHBOARD_PROPS: SeekerDashboardProps = {
   ],
   applications: [
     {
+      jobId: "",
       title: "Frontend Engineer (React)",
       company: "Leapfrog Technology",
       appliedAgo: "Applied 6d ago",
       status: "Interview",
     },
-    {
-      title: "Product Designer",
-      company: "CG App",
-      appliedAgo: "Applied 3d ago",
-      status: "Viewed",
-    },
-    {
-      title: "Content Writer (Remote)",
-      company: "Insight Workshop",
-      appliedAgo: "Applied 1d ago",
-      status: "Applied",
-    },
-    {
-      title: "Barista (Walk-in Hiring)",
-      company: "Himalayan Java",
-      appliedAgo: "Applied 10d ago",
-      status: "Offer",
-    },
   ],
   recommendedJobs: [
     {
+      jobId: "",
       title: "Frontend Engineer (React)",
       company: "Leapfrog Technology",
       location: "Kathmandu",
       salary: "NPR 80k\u2013130k",
       match: 91,
-    },
-    {
-      title: "Product Designer",
-      company: "CG App",
-      location: "Lalitpur",
-      salary: "NPR 70k\u2013110k",
-      match: 78,
-    },
-    {
-      title: "Content Writer (Remote)",
-      company: "Insight Workshop",
-      location: "Remote \u00b7 Nepal",
-      salary: "NPR 30k\u201345k",
-      match: 84,
-    },
-    {
-      title: "Sales Executive",
-      company: "Daraz Nepal",
-      location: "Kathmandu",
-      salary: "NPR 25k\u201340k",
-      match: 65,
     },
   ],
   profileCompleteness: 72,
@@ -186,18 +153,18 @@ function WelcomeSection({ userName }: { userName: string }) {
       </div>
 
       <div className="flex gap-3">
-        <a
-          href="/applications"
+        <Link
+          href="/Features/Applications"
           className="rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 shadow-sm transition-colors hover:bg-neutral-50"
         >
           My applications
-        </a>
-        <a
-          href="/jobs"
+        </Link>
+        <Link
+          href="/Features/Findjob"
           className="rounded-lg bg-[#735CC7] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-[#735CC7]/30 transition-opacity hover:opacity-90"
         >
-          Find jobs
-        </a>
+          Find job
+        </Link>
       </div>
     </div>
   );
@@ -251,40 +218,48 @@ function ApplicationsCard({
         >
           Your applications
         </h2>
-        <a
-          href="/applications"
+        <Link
+          href="/Features/Applications"
           className="flex items-center gap-0.5 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-900"
         >
           View all
           <ChevronRight className="h-3.5 w-3.5" />
-        </a>
+        </Link>
       </div>
 
-      <ul className="mt-2 divide-y divide-neutral-100">
-        {applications.map((app) => (
-          <li
-            key={app.title}
-            className="flex flex-wrap items-center justify-between gap-3 py-4"
-          >
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-neutral-900">
-                {app.title}
-              </p>
-              <p className="mt-1 flex items-center gap-1.5 text-xs text-neutral-500">
-                {app.company}
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                <span className="text-neutral-300">&middot;</span>
-                {app.appliedAgo}
-              </p>
-            </div>
-            <span
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium ${STATUS_STYLES[app.status]}`}
-            >
-              {app.status}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {applications.length === 0 ? (
+        <p className="mt-6 text-sm text-neutral-500">
+          You haven&apos;t applied to any jobs yet.
+        </p>
+      ) : (
+        <ul className="mt-2 divide-y divide-neutral-100">
+          {applications.map((app) => (
+            <li key={app.jobId + app.title}>
+              <Link
+                href={`/Features/job_profile/${app.jobId}`}
+                className="flex flex-wrap items-center justify-between gap-3 py-4 transition-colors hover:bg-neutral-50/60 -mx-2 px-2 rounded-lg"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-neutral-900">
+                    {app.title}
+                  </p>
+                  <p className="mt-1 flex items-center gap-1.5 text-xs text-neutral-500">
+                    {app.company}
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="text-neutral-300">&middot;</span>
+                    {app.appliedAgo}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium ${STATUS_STYLES[app.status]}`}
+                >
+                  {app.status}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -303,51 +278,59 @@ function RecommendedJobsCard({ jobs }: { jobs: RecommendedJob[] }) {
         >
           Recommended for you
         </h2>
-        <a
-          href="/jobs"
+        <Link
+          href="/Features/Findjob"
           className="flex items-center gap-0.5 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-900"
         >
           Browse jobs
           <ChevronRight className="h-3.5 w-3.5" />
-        </a>
+        </Link>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {jobs.map((job) => (
-          <div
-            key={job.title}
-            className="group relative rounded-xl border border-neutral-200 p-4 transition-colors hover:border-neutral-300 hover:bg-neutral-50/60"
-          >
-            <button
-              type="button"
-              aria-label="Save job"
-              className="absolute right-3 top-3 text-neutral-300 transition-colors hover:text-[#735CC7]"
+      {jobs.length === 0 ? (
+        <p className="mt-6 text-sm text-neutral-500">
+          No recommendations yet — complete your profile to get better matches.
+        </p>
+      ) : (
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {jobs.map((job) => (
+            <Link
+              key={job.jobId}
+              href={`/Features/job_profile/${job.jobId}`}
+              className="group relative block rounded-xl border border-neutral-200 p-4 transition-colors hover:border-neutral-300 hover:bg-neutral-50/60"
             >
-              <Bookmark className="h-4 w-4" />
-            </button>
+              <button
+                type="button"
+                aria-label="Save job"
+                onClick={(e) => e.preventDefault()}
+                className="absolute right-3 top-3 text-neutral-300 transition-colors hover:text-[#735CC7]"
+              >
+                <Bookmark className="h-4 w-4" />
+              </button>
 
-            <p className="pr-6 text-sm font-medium text-neutral-900">
-              {job.title}
-            </p>
-            <p className="mt-1.5 flex items-center gap-1 text-xs text-neutral-500">
-              <MapPin className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">
-                {job.company} &middot; {job.location}
-              </span>
-            </p>
-
-            <div className="mt-4 flex items-center justify-between">
-              <p className="text-sm font-medium text-neutral-900">
-                {job.salary}
+              <p className="pr-6 text-sm font-medium text-neutral-900">
+                {job.title}
               </p>
-              <span className="flex items-center gap-1 text-xs font-medium text-[#735CC7]">
-                <TrendingUp className="h-3.5 w-3.5" />
-                {job.match}% match
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+              <p className="mt-1.5 flex items-center gap-1 text-xs text-neutral-500">
+                <MapPin className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">
+                  {job.company} &middot; {job.location}
+                </span>
+              </p>
+
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-sm font-medium text-neutral-900">
+                  {job.salary}
+                </p>
+                <span className="flex items-center gap-1 text-xs font-medium text-[#735CC7]">
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  {job.match}% match
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -366,12 +349,12 @@ function SavedJobsCard({ count }: { count: number }) {
         <p className="mt-3 text-sm text-neutral-500">
           You have {count} saved job{count === 1 ? "" : "s"}.
         </p>
-        <a
-          href="/saved"
+        <Link
+          href="/Features/savedjobs"
           className="mt-5 inline-block rounded-lg border border-neutral-200 px-5 py-2 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50"
         >
           View saved jobs
-        </a>
+        </Link>
       </section>
     );
   }
@@ -387,12 +370,12 @@ function SavedJobsCard({ count }: { count: number }) {
       <p className="mt-4 text-sm text-neutral-500">
         You haven&apos;t saved any jobs yet.
       </p>
-      <a
-        href="/jobs"
+      <Link
+        href="/Features/Findjob"
         className="mt-5 inline-block rounded-lg border border-neutral-200 px-5 py-2 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50"
       >
         Explore jobs
-      </a>
+      </Link>
     </section>
   );
 }
@@ -418,12 +401,12 @@ function ProfileCompletenessCard({ percent }: { percent: number }) {
       <p className="mt-4 text-xs leading-relaxed text-neutral-500">
         Verified profiles get 3x more employer replies.
       </p>
-      <a
-        href="/profile"
+      <Link
+        href="/Features/Applications"
         className="mt-5 block rounded-lg border border-neutral-200 px-5 py-2 text-center text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50"
       >
         Complete profile
-      </a>
+      </Link>
     </section>
   );
 }
@@ -458,12 +441,12 @@ function KnowYourWorthCard() {
       <p className="mt-2 text-xs leading-relaxed text-neutral-500">
         See real salary ranges from verified employers in Nepal.
       </p>
-      <a
-        href="/salaries"
+      <Link
+        href="/Features/salary_explorer"
         className="mt-5 block rounded-lg border border-neutral-200 px-5 py-2 text-center text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50"
       >
         Explore salaries
-      </a>
+      </Link>
     </section>
   );
 }
