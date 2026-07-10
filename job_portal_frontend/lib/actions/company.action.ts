@@ -1,16 +1,16 @@
-import { AxiosError } from "axios";
-import { companyApi } from "../api/company";
+import { AxiosError } from 'axios';
+import { companyApi } from '../api/company';
 
 const extractErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
     return (
       error.response?.data?.message ||
       error.message ||
-      "Something went wrong. Please try again."
+      'Something went wrong. Please try again.'
     );
   }
   if (error instanceof Error) return error.message;
-  return "Something went wrong. Please try again.";
+  return 'Something went wrong. Please try again.';
 };
 
 export const companyAction = {
