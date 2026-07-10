@@ -8,6 +8,9 @@ import  authRoutes  from './routes/Auth/auth.routes';
 import jobRoutes from './routes/PostJob/job.routes';
 import companyRoutes from './routes/company/company.routes';
 import salaryRoutes from './routes/salaryexplorer/salary.route';
+import applicationRoutes from './routes/application/application.route';
+import jobSeekerRoutes from './routes/Auth/jobseeker.route';
+import savedJobRoutes from './routes/savedjobs/savedjob.routes';
 const app: Application = express();
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(
@@ -27,5 +30,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/companies", companyRoutes);
 app.use("/api/salary-explorer", salaryRoutes);
+app.use("/api", applicationRoutes);
+app.use("/api/job-seekers", jobSeekerRoutes);
+app.use("/api", savedJobRoutes);
 
 export default app;
