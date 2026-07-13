@@ -13,6 +13,7 @@ export interface ICompany extends Document {
   whyChooseUs: string;
   businessRegistrationNumber: string;
   companyDocument: string; // file path / URL to uploaded registration doc
+  companyLogo?: string; // file path / URL
   status: VerificationStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -45,6 +46,7 @@ const companySchema = new Schema<ICompany>(
       trim: true,
     },
     companyDocument: { type: String, required: true },
+    companyLogo: { type: String },
     status: {
       type: String,
       enum: Object.values(VerificationStatus),

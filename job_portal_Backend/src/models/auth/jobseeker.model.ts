@@ -9,6 +9,12 @@ export interface IJobSeeker extends Document {
   qualificationImages: string[]; // file paths / URLs
   preferredLocation?: string; // used for fit-score location matching
   preferredWorkType?: WorkType; // used for fit-score work-type matching
+  profileImage?: string; // file path / URL
+  experienceYears?: number;
+  expectedSalary?: number; // NPR / month
+  noticePeriodDays?: number;
+  education?: string;
+  linkedinUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +40,12 @@ const jobSeekerSchema = new Schema<IJobSeeker>(
     qualificationImages: { type: [String], default: [] },
     preferredLocation: { type: String, trim: true },
     preferredWorkType: { type: String, enum: Object.values(WorkType) },
+    profileImage: { type: String },
+    experienceYears: { type: Number, min: 0 },
+    expectedSalary: { type: Number, min: 0 },
+    noticePeriodDays: { type: Number, min: 0 },
+    education: { type: String, trim: true },
+    linkedinUrl: { type: String, trim: true },
   },
   { timestamps: true }
 );

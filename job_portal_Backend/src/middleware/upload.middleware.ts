@@ -139,3 +139,58 @@ export const employerRegisterUpload = companyDocUpload.fields([
 export const jobSeekerRegisterUpload = qualificationUpload.fields([
   { name: "qualificationImages", maxCount: 5 },
 ]);
+
+// ---------------- Profile image storage (job seeker) ----------------
+const profileImageDir = path.join(__dirname, "../../public/profile_images");
+if (!fs.existsSync(profileImageDir)) {
+  fs.mkdirSync(profileImageDir, { recursive: true });
+}
+
+const profileImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, profileImageDir),
+  filename: (req, file, cb) => {
+    const unique = uuidv4();
+    const ext = path.extname(file.originalname);
+    cb(null, `${unique}${ext}`);
+  },
+});
+
+export const profileImageUpload = multer({
+  storage: profileImageStorage,
+  fileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 },
+});
+
+// Combined uploader for updating a job seeker's profile:
+// optional single "profileImage" + optional multiple "qualificationImages".
+export const jobSeekerUpdateUpload = profileImageUpload.fields([
+  { name: "profileImage", maxCount: 1 },
+  { name: "qualificationImages", maxCount: 5 },
+]);
+
+// ---------------- Company logo storage (employer) ----------------
+const companyLogoDir = path.join(__dirname, "../../public/company_logos");
+if (!fs.existsSync(companyLogoDir)) {
+  fs.mkdirSync(companyLogoDir, { recursive: true });
+}
+
+const companyLogoStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, companyLogoDir),
+  filename: (req, file, cb) => {
+    const unique = uuidv4();
+    const ext = path.extname(file.originalname);
+    cb(null, `${unique}${ext}`);
+  },
+});
+
+export const companyLogoUpload = multer({
+  storage: companyLogoStorage,
+  fileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 },
+});
+
+// Combined uploader for updating an employer's company profile:
+// optional single "companyLogo".
+export const employerUpdateUpload = companyLogoUpload.fields([
+  { name: "companyLogo", maxCount: 1 },
+]);
