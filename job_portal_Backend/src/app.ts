@@ -11,6 +11,7 @@ import salaryRoutes from './routes/salaryexplorer/salary.route';
 import applicationRoutes from './routes/application/application.route';
 import jobSeekerRoutes from './routes/Auth/jobseeker.route';
 import savedJobRoutes from './routes/savedjobs/savedjob.routes';
+import offerRoutes from './routes/offer/offer.routes';
 const app: Application = express();
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(
@@ -33,5 +34,6 @@ app.use("/api/salary-explorer", salaryRoutes);
 app.use("/api", applicationRoutes);
 app.use("/api/job-seekers", jobSeekerRoutes);
 app.use("/api", savedJobRoutes);
+app.use("/api", offerRoutes);
 
 export default app;

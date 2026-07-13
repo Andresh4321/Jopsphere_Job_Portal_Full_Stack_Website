@@ -12,6 +12,8 @@
     "mongoose": "^9.6.3",
     "multer": "^2.1.1",
     "nodemailer": "^9.0.3",
+    "pdfkit": "^0.19.1",
+    "socket.io": "^4.8.3",
     "ts-jest": "^29.4.11",
     "uuid": "^14.0.1",
     "zod": "^4.4.3"
@@ -26,6 +28,7 @@
     "@types/multer": "^2.2.0",
     "@types/node": "^26.1.0",
     "@types/nodemailer": "^8.0.1",
+    "@types/pdfkit": "^0.17.6",
     "@types/supertest": "^7.2.0",
     "jest": "^30.4.2",
     "nodemon": "^3.1.14",
