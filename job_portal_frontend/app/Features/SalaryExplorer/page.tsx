@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import SalaryTable from '../../components/salaryexplorer/salarytable';
 import { salaryAction } from '../../../lib/actions/salary.action';
 import { SalaryExplorerRow } from '../../../lib/types/salary.types';
+import AppHeader from '../../components/appheader';
 
 type SortOption = 'alphabetical' | 'highest_avg' | 'most_listings';
 
@@ -55,29 +56,7 @@ export default function SalaryExplorerPage() {
 
   return (
     <main className="min-h-screen bg-[#F0EEE6] text-[#1A1A1A]">
-      <header className="border-b border-[#C8C6BE] bg-[#F0EEE6]">
-        <div className="mx-auto flex h-15 w-full max-w-300 items-center justify-between px-8">
-          <div className="flex items-center gap-3">
-            <div className="grid h-8 w-8 place-items-center bg-[#6B5FD6] text-lg font-bold text-white">J</div>
-            <span className="text-[15px] font-bold">Jopsphere</span>
-          </div>
-
-          <nav className="hidden items-center gap-8 text-[13px] lg:flex">
-            <a href="#" className="text-[#444444]">Find Jobs</a>
-            <a href="#" className="text-[#444444]">My Applications</a>
-            <a href="#" className="border-b-2 border-[#6B5FD6] pb-2 font-bold text-[#1A1A1A]">Salary Explorer</a>
-            <a href="#" className="text-[#444444]">For Employers</a>
-            <a href="#" className="text-[#444444]">Applicants</a>
-          </nav>
-
-          <div className="hidden items-center gap-4 lg:flex">
-            <a href="#" className="text-[13px] text-[#1A1A1A]">Sign in</a>
-            <button type="button" className="h-8.5 bg-[#6B5FD6] px-4 text-[13px] font-bold text-white">
-              Post a Job
-            </button>
-          </div>
-        </div>
-      </header>
+      <AppHeader portal="seeker" />
 
       <section className="mx-auto w-full max-w-300 px-8 py-12">
         <h1 className="text-4xl font-bold">Salary Explorer</h1>

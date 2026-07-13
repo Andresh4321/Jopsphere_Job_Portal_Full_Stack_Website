@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { applicationAction } from '../../../lib/actions/application.action';
 import { SeekerApplication, ApplicationStage, STAGE_LABELS, APPLICATION_STAGE_ORDER } from '../../../lib/types/application.types';
 import { formatRelativeTime } from '../../../lib/utils/job-format';
+import AppHeader from '../../components/appheader';
+import { offerAction } from '../../../lib/actions/offer.action';
+
 
 const navigationItems = [
   { label: 'Find Jobs', href: '/Features/find_jobs' },
@@ -159,6 +162,17 @@ function TimelinePanel({ app }: { app: SeekerApplication | null }) {
         </div>
 
         <div className="mt-6 space-y-3">
+          {(app.stage === 'offer' || app.stage === 'hired') && (
+            <button
+              onClick={async () => {
+                const result = await offerAction.getOfferByApplication(app.id);
+                if (result.success) router.push(`/Features/Offer/${result.data.id}`);
+              }}
+              className="w-full rounded-xl bg-[#148A50] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+            >
+              💬 View offer & negotiation
+            </button>
+          )}
           <button
             onClick={() => router.push(`/Features/job_profile/${app.jobId}`)}
             className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-700"
@@ -201,26 +215,7 @@ export default function ApplicationsPage() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fafafa_0%,#f4f4f5_100%)] text-zinc-900">
-      <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <BrandMark />
-            <span className="text-2xl font-bold tracking-tight text-zinc-900">Jopsphere</span>
-          </div>
-
-          <nav className="hidden items-center gap-8 xl:flex" aria-label="Primary">
-            {navigationItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className={['text-sm transition hover:text-zinc-900', item.active ? 'font-semibold text-zinc-900' : 'text-zinc-500'].join(' ')}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </header>
+      <AppHeader portal="seeker" />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">

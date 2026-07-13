@@ -19,6 +19,8 @@ import { SeekerApplication, ApplicationStage } from '../../../lib/types/applicat
 import { formatRelativeTime, formatSalaryRange } from '../../../lib/utils/job-format';
 import { computeClientFitScore } from '../../../lib/utils/fitscorce';
 
+import AppHeader from '../../components/appheader';
+
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-sans' });
 const dmSerif = DM_Serif_Display({ subsets: ['latin'], weight: ['400'], variable: '--font-serif' });
 
@@ -142,7 +144,7 @@ export default function SeekerDashboardPage() {
       className={`${dmSans.variable} ${dmSerif.variable} min-h-screen bg-[#F8F7F3] font-sans text-neutral-900 antialiased`}
       style={{ fontFamily: 'var(--font-sans)' }}
     >
-      <SiteHeader active="seeker" />
+      <AppHeader portal="seeker" />
       <SeekerDashboard
         userName={userName}
         stats={stats}

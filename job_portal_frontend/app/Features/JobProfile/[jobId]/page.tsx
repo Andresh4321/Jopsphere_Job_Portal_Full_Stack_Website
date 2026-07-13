@@ -15,6 +15,7 @@ import {
   formatRelativeTime,
   formatDeadline,
 } from '../../../../lib/utils/job-format';
+import AppHeader from '../../../components/appheader';
 
 export default function JobProfilePage() {
   const params = useParams();
@@ -150,28 +151,7 @@ export default function JobProfilePage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] pb-10 text-neutral-900">
-      <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex h-18 w-full max-w-312 items-center justify-between px-4 lg:px-0">
-          <div className="flex items-center gap-4">
-            <div className="relative h-9.5 w-9.5 rounded bg-[#6D4AFF]">
-              <div className="absolute left-2.5 top-4 h-3.5 w-4 border-2 border-white" />
-              <div className="absolute left-3.75 top-2 h-1.75 w-2 border-2 border-white" />
-            </div>
-            <h1 className="text-[28px] font-bold">Jopsphere</h1>
-          </div>
-          <nav className="hidden items-center gap-8 text-[15px] lg:flex">
-            <a href="/Features/find_jobs" className="font-bold text-neutral-900">Find Jobs</a>
-            <a href="#" className="text-neutral-500">My Applications</a>
-            <a href="/Features/salary_explorer" className="text-neutral-500">Salary Explorer</a>
-          </nav>
-          <div className="hidden items-center gap-6 lg:flex">
-            <a href="/login" className="text-[15px] text-neutral-900">Sign in</a>
-            <a href="/post-job" className="h-9 flex items-center rounded bg-[#6D4AFF] px-6 text-sm font-bold text-white">
-              Post a Job
-            </a>
-          </div>
-        </div>
-      </header>
+      <AppHeader portal="seeker" />
 
       <section className="mx-auto w-full max-w-312 px-4 pt-8 lg:px-0">
         <button

@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { jobSeekerApi } from '../api/jobseeker';
+import { UpdateJobSeekerProfilePayload } from '../types/jobseeker.types';
 
 const extractErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -13,6 +14,15 @@ export const jobSeekerAction = {
   async getMyProfile() {
     try {
       const data = await jobSeekerApi.getMyProfile();
+      return { success: true as const, data };
+    } catch (error) {
+      return { success: false as const, message: extractErrorMessage(error) };
+    }
+  },
+
+  async updateMyProfile(payload: UpdateJobSeekerProfilePayload) {
+    try {
+      const data = await jobSeekerApi.updateMyProfile(payload);
       return { success: true as const, data };
     } catch (error) {
       return { success: false as const, message: extractErrorMessage(error) };

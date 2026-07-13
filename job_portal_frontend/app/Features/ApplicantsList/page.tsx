@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { companyAction } from '../../../lib/actions/company.action';
 import { jobAction } from '../../../lib/actions/job.action';
@@ -7,6 +7,9 @@ import { applicationAction } from '../../../lib/actions/application.action';
 import { JobResponse } from '../../../lib/types/job.types';
 import { EmployerApplicant, ApplicationStage, STAGE_LABELS } from '../../../lib/types/application.types';
 import { formatRelativeTime, WORK_TYPE_LABELS } from '../../../lib/utils/job-format';
+import AppHeader from '../../components/appheader';
+import { offerAction } from '../../../lib/actions/offer.action';
+import SendOfferModal from '../../components/sendoffer/page';
 
 const TABS: { stage: ApplicationStage | 'all'; label: string }[] = [
   { stage: 'all', label: 'All' },
@@ -36,6 +39,7 @@ function initialsOf(name: string) {
 }
 
 export default function ApplicantsListPage() {
+  const router = useRouter();
   const [jobs, setJobs] = useState<JobResponse[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [applicants, setApplicants] = useState<EmployerApplicant[]>([]);
@@ -48,6 +52,7 @@ export default function ApplicantsListPage() {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'best_fit' | 'newest'>('best_fit');
   const [selectedApplicantId, setSelectedApplicantId] = useState<string | null>(null);
+  const [showOfferModal, setShowOfferModal] = useState(false);
 
   // Load employer's jobs once
   useEffect(() => {
@@ -135,19 +140,7 @@ export default function ApplicantsListPage() {
 
   return (
     <main className="min-h-screen bg-[#F0EEE6] pb-6 text-[#1A1A1A]">
-      <header className="border-b border-[#C8C6BE]">
-        <div className="mx-auto flex h-[60px] w-full max-w-[1400px] items-center justify-between px-8">
-          <div className="flex items-center gap-3">
-            <div className="grid h-8 w-8 place-items-center bg-[#6B5FD6] text-[17px] font-bold text-white">J</div>
-            <h1 className="text-[28px] font-bold">Jopsphere</h1>
-          </div>
-          <nav className="hidden items-center gap-8 text-[13px] text-[#555555] lg:flex">
-            <a href="/Features/find_jobs">Find Jobs</a>
-            <a href="/Features/salary_explorer">Salary Explorer</a>
-            <a href="#" className="border-b-2 border-[#6B5FD6] pb-4 font-bold text-[#1A1A1A]">Applicants</a>
-          </nav>
-        </div>
-      </header>
+      <AppHeader portal="employer" />
 
       <section className="mx-auto w-full max-w-[1400px] px-8 pt-6">
         <p className="text-[11px] font-bold text-[#888888]">EMPLOYER DASHBOARD</p>
@@ -399,12 +392,29 @@ export default function ApplicantsListPage() {
 
                 <button
                   type="button"
-                  disabled={updatingStageId === selectedApplicant.applicationId}
-                  onClick={() => handleStageChange(selectedApplicant.applicationId, 'offer')}
+                  onClick={async () => {
+                    if (selectedApplicant.stage === 'offer' || selectedApplicant.stage === 'hired') {
+                      const result = await offerAction.getOfferByApplication(selectedApplicant.applicationId);
+                      if (result.success) router.push(`/Features/Offer/${result.data.id}`);
+                    } else {
+                      setShowOfferModal(true);
+                    }
+                  }}
                   className="mt-4 h-9 w-full rounded bg-[#6B5FD6] text-[13px] font-bold text-white disabled:opacity-50"
                 >
-                  ✍ Select & make offer
+                  {selectedApplicant.stage === 'offer' || selectedApplicant.stage === 'hired'
+                    ? '💬 View offer & negotiation'
+                    : '✍ Select & make offer'}
                 </button>
+
+                {showOfferModal && (
+                  <SendOfferModal
+                    applicationId={selectedApplicant.applicationId}
+                    candidateName={selectedApplicant.fullName}
+                    jobTitle={selectedApplicant.jobTitle}
+                    onClose={() => setShowOfferModal(false)}
+                  />
+                )}
 
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <button

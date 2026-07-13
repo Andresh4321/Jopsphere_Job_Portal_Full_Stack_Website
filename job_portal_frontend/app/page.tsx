@@ -10,7 +10,10 @@ import LoginPage from "./Features/login/page";
 import EmployerDashboard from "./Features/employer_dashboard/page";
 import ApplicationsPage from "./Features/Applications/page";
 import ApplicantsListPage from "./Features/ApplicantsList/page";
+import CompanyListPage from "./Features/CompanyList/page";
+import HomePage from "./Features/homepage/page";
+import OfferNegotiationPage from "./Features/offer/offernegotiation/page";
 
 export default function Home() {
-  return <Homepage/>;
+  return <OfferNegotiationPage/>;
 }
