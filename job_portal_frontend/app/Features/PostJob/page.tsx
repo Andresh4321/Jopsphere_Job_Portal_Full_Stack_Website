@@ -6,6 +6,7 @@ import { jobAction } from '../../../lib/actions/job.action';
 import { companyAction } from '../../../lib/actions/company.action';
 import { authAction } from '../../../lib/actions/auth.action';
 import SkillsInput from '../../components/postjob/skillsinput';
+import AppHeader from '../../components/appheader';
 import { WorkType, ListingType } from '../../../lib/types/job.types';
 
 const WORK_TYPES: { value: WorkType; label: string }[] = [
@@ -197,33 +198,7 @@ export default function PostJobPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-neutral-900">
-      <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex h-18 w-full max-w-312 items-center justify-between px-4 lg:px-0">
-          <div className="flex items-center gap-4">
-            <div className="relative h-9.5 w-9.5 rounded bg-gradient-to-br from-[#7C5CFF] to-[#6D4AFF]">
-              <div className="absolute left-2.5 top-4 h-3.5 w-4 border-2 border-white" />
-              <div className="absolute left-3.75 top-2 h-1.75 w-2 border-2 border-white" />
-            </div>
-            <h1 className="text-[28px] font-bold">Jopsphere</h1>
-          </div>
-
-          <nav className="hidden items-center gap-8 text-[15px] lg:flex">
-            <a href="#" className="text-neutral-500">Find Jobs</a>
-            <a href="#" className="text-neutral-500">My Applications</a>
-            <a href="#" className="text-neutral-500">Salary Explorer</a>
-            <a href="#" className="font-bold text-neutral-900">For Employers</a>
-            <a href="#" className="text-neutral-500">Applicants</a>
-          </nav>
-
-          <div className="hidden items-center gap-6 lg:flex">
-            {companyName && (
-              <span className="text-sm text-neutral-500">
-                Posting as <span className="font-semibold text-neutral-900">{companyName}</span>
-              </span>
-            )}
-          </div>
-        </div>
-      </header>
+      <AppHeader portal="employer" />
 
       <section className="mx-auto w-full max-w-312 px-4 py-9 lg:px-0">
         <h2 className="text-[42px] font-bold leading-tight">Post a Job</h2>

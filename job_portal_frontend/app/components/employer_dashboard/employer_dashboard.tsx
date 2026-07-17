@@ -346,12 +346,20 @@ export function EmployerDashboard() {
                 </p>
               </>
             )}
-            <Link
-              href={`/Features/company_profile/${company?.companyId ?? ''}`}
-              className="mt-5 h-9 w-full flex items-center justify-center rounded-lg border border-neutral-200 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
-            >
-              View company profile
-            </Link>
+            <div className="mt-5 flex gap-2">
+              <Link
+                href="/Features/UpdateProfile/employer"
+                className="flex-1 h-9 flex items-center justify-center rounded-lg border border-neutral-200 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
+              >
+                View profile
+              </Link>
+              <Link
+                href="/Features/UpdateProfile/employer?tab=edit"
+                className="flex-1 h-9 flex items-center justify-center rounded-lg bg-violet-600 text-xs font-medium text-white shadow-sm hover:bg-violet-700 transition-colors"
+              >
+                Edit profile
+              </Link>
+            </div>
           </div>
 
           <div className="bg-white border border-neutral-200/80 rounded-xl p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">

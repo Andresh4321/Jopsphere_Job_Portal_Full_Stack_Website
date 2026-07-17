@@ -5,6 +5,8 @@ export const AUTH_ENDPOINTS = {
   REGISTER_JOB_SEEKER: "/api/auth/register/job-seeker",
   REGISTER_EMPLOYER: "/api/auth/register/employer",
   LOGIN: "/api/auth/login",
+  FORGOT_PASSWORD: "/api/auth/forgot-password",
+  RESET_PASSWORD: "/api/auth/reset-password",
 };
 
 export const JOB_ENDPOINTS = {

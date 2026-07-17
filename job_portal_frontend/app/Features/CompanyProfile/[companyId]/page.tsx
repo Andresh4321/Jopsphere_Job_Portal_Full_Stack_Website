@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { companyAction } from '../../../../lib/actions/company.action';
 import { CompanyProfileFull } from '../../../../lib/types/company.types';
 import { formatSalaryRange, WORK_TYPE_LABELS, formatRelativeTime } from '../../../../lib/utils/job-format';
+import { getBackendImageUrl } from '../../../../lib/utils/image-url';
+import AppHeader from '../../../components/appheader';
 
 
 export default function CompanyProfilePage() {
@@ -72,21 +74,7 @@ export default function CompanyProfilePage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] pb-8 text-neutral-900">
-      <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex h-18 w-full max-w-312 items-center justify-between px-4 lg:px-0">
-          <div className="flex items-center gap-4">
-            <div className="relative h-9.5 w-9.5 rounded bg-[#6D4AFF]">
-              <div className="absolute left-2.5 top-4 h-3.5 w-4 border-2 border-white" />
-              <div className="absolute left-3.75 top-2 h-1.75 w-2 border-2 border-white" />
-            </div>
-            <h1 className="text-[28px] font-bold">Jopsphere</h1>
-          </div>
-          <nav className="hidden items-center gap-8 text-[15px] text-neutral-500 lg:flex">
-            <Link href="/Features/Applications">My Applications</Link>
-            <Link href="/Features/salary_explorer">Salary Explorer</Link>
-          </nav>
-        </div>
-      </header>
+      <AppHeader portal="seeker" />
 
       <section className="mx-auto w-full max-w-312 px-4 pt-8 lg:px-0">
         <Link href="/Features/CompanyList" className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">
@@ -96,10 +84,13 @@ export default function CompanyProfilePage() {
         <div className="mt-6 rounded border border-neutral-200 bg-white p-8">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div className="flex items-start gap-7">
-              <div className="relative h-18 w-18 rounded bg-[#F0ECFF] flex-shrink-0">
-                <div className="absolute left-5 top-3.5 h-12 w-8 border-[3px] border-[#6D4AFF]" />
-                <div className="absolute left-7.5 top-7 h-6 w-3 border-[2.5px] border-[#6D4AFF]" />
-                <div className="absolute left-7 top-12.5 h-3.5 w-4 border-[3px] border-[#6D4AFF]" />
+              <div className="h-18 w-18 rounded-xl bg-[#F0ECFF] flex-shrink-0 overflow-hidden flex items-center justify-center border-2 border-neutral-100">
+                <img
+                  src={profile.companyLogo ? getBackendImageUrl(profile.companyLogo) : '/company.png'}
+                  alt={profile.companyName}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/company.png'; }}
+                />
               </div>
 
               <div>

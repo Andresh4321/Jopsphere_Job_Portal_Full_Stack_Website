@@ -39,6 +39,7 @@ export interface CompanyListItem {
   companyName: string;
   industry: string;
   headquarters: string;
+  companyLogo?: string;
   status: 'unverified' | 'verified';
   openRolesCount: number;
 }
@@ -69,6 +70,7 @@ export interface CompanyProfileFull {
   companyWebsite: string;
   aboutCompany: string;
   whyChooseUs: string;
+  companyLogo?: string;
   status: 'unverified' | 'verified';
   createdAt: string;
   openRoles: CompanyOpenRole[];

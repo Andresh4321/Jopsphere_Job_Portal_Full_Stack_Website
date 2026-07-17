@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginShell from '../../components/login/LoginShell';
 import { authAction } from '../../../lib/actions/auth.action';
+import { ROUTES } from '../../../lib/route';
 
 // Maps backend role -> actual dashboard route in this project.
 // Kept here (not trusted from the backend's `redirectTo`) so the frontend
@@ -90,7 +91,7 @@ export default function LoginPage() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-[13px] font-semibold text-[#171717]">Password</label>
-            <Link href="/forgot-password" className="text-[13px] font-semibold text-[#6D4AFF] hover:text-[#5F3CF0] transition-colors">
+            <Link href={ROUTES.forgotPassword} className="text-[13px] font-semibold text-[#6D4AFF] hover:text-[#5F3CF0] transition-colors">
               Forgot password?
             </Link>
           </div>
@@ -126,7 +127,7 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-[#8A8A8A] mt-8">
         Don&apos;t have an account?{' '}
-        <Link href="/Features/Register" className="font-semibold text-[#6D4AFF] hover:text-[#5F3CF0] transition-colors">
+        <Link href={ROUTES.register} className="font-semibold text-[#6D4AFF] hover:text-[#5F3CF0] transition-colors">
           Register
         </Link>
       </p>

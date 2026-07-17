@@ -92,11 +92,14 @@ export default function RegisterPage() {
 
       if (!loginResult.success) {
         // Account was created but auto-login failed (rare) — send to login page.
-        router.push('/login');
+        router.push('/Features/login');
         return;
       }
 
-      router.push(loginResult.redirectTo);
+      const dashboardRoute = formData.role === 'employer'
+        ? '/Features/employer_dashboard'
+        : '/Features/seeker_dashboard';
+      router.push(dashboardRoute);
     } finally {
       setSubmitting(false);
     }

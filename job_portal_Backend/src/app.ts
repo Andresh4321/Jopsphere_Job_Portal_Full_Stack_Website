@@ -14,6 +14,7 @@ import savedJobRoutes from './routes/savedjobs/savedjob.routes';
 import offerRoutes from './routes/offer/offer.routes';
 const app: Application = express();
 app.use(express.static(path.join(__dirname, "../public")));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(
   cors({
     origin: 'http://localhost:3000',

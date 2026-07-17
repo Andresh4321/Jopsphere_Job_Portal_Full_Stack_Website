@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { savedJobAction } from '../../../lib/actions/savedjob.action';
 import { SavedJob } from '../../../lib/types/savedjobs.types';
 import { WORK_TYPE_LABELS, formatSalaryRange, formatRelativeTime } from '../../../lib/utils/job-format';
+import AppHeader from '../../components/appheader';
 
 export default function SavedJobsPage() {
   const [jobs, setJobs] = useState<SavedJob[]>([]);
@@ -29,8 +30,9 @@ export default function SavedJobsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F8F7F3] px-6 py-10">
-      <div className="mx-auto max-w-[1200px]">
+    <main className="min-h-screen bg-[#F8F7F3]">
+      <AppHeader portal="seeker" />
+      <div className="mx-auto max-w-[1200px] px-6 py-10">
         <div className="flex items-center justify-between">
           <h1 className="text-[32px] text-neutral-900" style={{ fontFamily: 'var(--font-serif)' }}>
             Saved jobs

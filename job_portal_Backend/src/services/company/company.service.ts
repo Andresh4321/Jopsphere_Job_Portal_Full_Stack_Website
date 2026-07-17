@@ -103,6 +103,7 @@ export const companyService = {
           companyName: company.companyName,
           industry: company.industry,
           headquarters: company.headquarters,
+          companyLogo: company.companyLogo,
           status: company.status,
           openRolesCount,
         };
@@ -172,6 +173,7 @@ export const companyService = {
       companyWebsite: company.companyWebsite,
       aboutCompany: company.aboutCompany,
       whyChooseUs: company.whyChooseUs,
+      companyLogo: company.companyLogo,
       status: company.status,
       createdAt: company.createdAt,
       openRoles,

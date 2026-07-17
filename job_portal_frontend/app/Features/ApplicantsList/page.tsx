@@ -6,7 +6,7 @@ import { jobAction } from '../../../lib/actions/job.action';
 import { applicationAction } from '../../../lib/actions/application.action';
 import { JobResponse } from '../../../lib/types/job.types';
 import { EmployerApplicant, ApplicationStage, STAGE_LABELS } from '../../../lib/types/application.types';
-import { formatRelativeTime, WORK_TYPE_LABELS } from '../../../lib/utils/job-format';
+import { formatRelativeTime } from '../../../lib/utils/job-format';
 import AppHeader from '../../components/appheader';
 import { offerAction } from '../../../lib/actions/offer.action';
 import SendOfferModal from '../../components/sendoffer/page';
@@ -22,20 +22,28 @@ const TABS: { stage: ApplicationStage | 'all'; label: string }[] = [
   { stage: 'rejected', label: 'Rejected' },
 ];
 
-function toneClasses(index: number) {
-  const tones = ['bg-[#EDE9FB] text-[#6B5FD6]', 'bg-[#E1F5EE] text-[#0F6E56]', 'bg-[#FAECE7] text-[#993C1D]'];
-  return tones[index % tones.length];
-}
-
-function stageClasses(stage: ApplicationStage) {
-  if (stage === 'shortlisted' || stage === 'hired') return 'bg-[#E8F5EC] text-[#22913A]';
-  if (stage === 'interview' || stage === 'offer') return 'bg-[#EDE9FB] text-[#534AB7]';
-  if (stage === 'rejected') return 'bg-[#FDECEC] text-[#D93025]';
-  return 'bg-[#F7F6F2] text-[#888888]';
-}
-
 function initialsOf(name: string) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+}
+
+function stageColor(stage: ApplicationStage): string {
+  switch (stage) {
+    case 'shortlisted':
+    case 'hired':
+      return 'bg-emerald-50 text-emerald-700';
+    case 'interview':
+    case 'offer':
+      return 'bg-[#F0ECFF] text-[#6D4AFF]';
+    case 'rejected':
+      return 'bg-red-50 text-red-600';
+    default:
+      return 'bg-neutral-100 text-neutral-600';
+  }
+}
+
+function avatarTone(index: number) {
+  const tones = ['bg-[#F0ECFF] text-[#6D4AFF]', 'bg-emerald-50 text-emerald-700', 'bg-amber-50 text-amber-700'];
+  return tones[index % tones.length];
 }
 
 export default function ApplicantsListPage() {
@@ -139,63 +147,71 @@ export default function ApplicantsListPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F0EEE6] pb-6 text-[#1A1A1A]">
+    <main className="min-h-screen bg-[#FAFAFA]">
       <AppHeader portal="employer" />
 
-      <section className="mx-auto w-full max-w-[1400px] px-8 pt-6">
-        <p className="text-[11px] font-bold text-[#888888]">EMPLOYER DASHBOARD</p>
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-4">
+      <section className="mx-auto w-full max-w-[1400px] px-6 pt-8 pb-10 lg:px-10">
+        {/* Page header */}
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-[28px] font-bold">Applicants</h2>
-            <p className="mt-2 text-[13px] text-[#666666]">
+            <h1 className="text-3xl font-bold text-neutral-900">Applicants</h1>
+            <p className="mt-1 text-sm text-neutral-500">
               Review, shortlist and hire — every applicant is identity-verified, no fake profiles.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <select
-              value={selectedJobId ?? ''}
-              onChange={(e) => setSelectedJobId(e.target.value)}
-              className="h-9 min-w-[280px] rounded border border-[#D8D6CE] bg-white px-5 text-left text-[13px] text-[#333333]"
-            >
-              {jobs.length === 0 && <option value="">No jobs posted</option>}
-              {jobs.map((job) => (
-                <option key={job.id} value={job.id}>{job.jobTitle}</option>
-              ))}
-            </select>
-          </div>
+          {/* Job selector */}
+          <select
+            value={selectedJobId ?? ''}
+            onChange={(e) => setSelectedJobId(e.target.value)}
+            className="h-10 min-w-[280px] rounded-xl border border-neutral-200 bg-white px-4 text-sm text-neutral-900 outline-none transition-all focus:border-[#6D4AFF] focus:shadow-[0_0_0_4px_rgba(109,74,255,0.08)]"
+          >
+            {jobs.length === 0 && <option value="">No jobs posted</option>}
+            {jobs.map((job) => (
+              <option key={job.id} value={job.id}>{job.jobTitle}</option>
+            ))}
+          </select>
         </div>
 
         {error && (
-          <div className="mt-6 rounded border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">{error}</div>
+          <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">{error}</div>
         )}
 
+        {/* Job summary card */}
         {selectedJob && (
-          <div className="mt-6 rounded border border-[#E2E0D8] bg-white px-5 py-3 text-[12px]">
+          <div className="mt-6 rounded-2xl border border-neutral-200 bg-white px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-4">
-                <span className="text-[13px] font-bold">{selectedJob.jobTitle}</span>
-                {selectedJob.company.companyVerified && <span className="text-[#22913A]">✔ Verified employer</span>}
-                <span className="text-[#888888]">📍 {selectedJob.location}</span>
-                <span className="text-[#888888]">
-                  Salary disclosed: NPR {selectedJob.salary.min.toLocaleString('en-IN')}-{selectedJob.salary.max.toLocaleString('en-IN')}
+                <span className="text-sm font-bold text-neutral-900">{selectedJob.jobTitle}</span>
+                {selectedJob.company.companyVerified && (
+                  <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 110 16A8 8 0 018 0zm3.41 5.59L7 10l-2.41-2.41L5.3 6.88 7 8.59l3.7-3.7.71.7z"/></svg>
+                    Verified employer
+                  </span>
+                )}
+                <span className="text-xs text-neutral-500">{selectedJob.location}</span>
+                <span className="text-xs text-neutral-500">
+                  NPR {selectedJob.salary.min.toLocaleString('en-IN')}–{selectedJob.salary.max.toLocaleString('en-IN')}
                 </span>
               </div>
-              <span className="text-[#888888]">
+              <span className="text-xs text-neutral-500">
                 {tabCounts.all ?? 0} total · {tabCounts.shortlisted ?? 0} shortlisted · {tabCounts.interview ?? 0} in interview
               </span>
             </div>
           </div>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        {/* Stage tabs */}
+        <div className="mt-5 flex flex-wrap gap-1.5">
           {TABS.map((tab) => (
             <button
               key={tab.stage}
               type="button"
               onClick={() => setActiveTab(tab.stage)}
-              className={`h-7 rounded px-3 text-[12px] transition-colors ${
-                activeTab === tab.stage ? 'bg-[#6B5FD6] font-bold text-white' : 'border border-[#E2E0D8] bg-white text-[#555555] hover:bg-[#F7F6F2]'
+              className={`h-8 rounded-lg px-3.5 text-xs font-medium transition-all ${
+                activeTab === tab.stage
+                  ? 'bg-[#6D4AFF] text-white shadow-sm'
+                  : 'border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50'
               }`}
             >
               {tab.label} {tabCounts[tab.stage] ?? 0}
@@ -203,126 +219,143 @@ export default function ApplicantsListPage() {
           ))}
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[820px_1fr] xl:grid-cols-[820px_492px]">
+        {/* Main content grid */}
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]">
+          {/* Left column — applicant list */}
           <div>
+            {/* Filters */}
             <div className="mb-4 flex flex-wrap gap-2">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="🔍 Search by name, skill or headline"
-                className="h-9 min-w-[320px] flex-1 rounded border border-[#D8D6CE] bg-white px-5 text-[12px] text-[#333333] outline-none"
-              />
+              <div className="relative flex-1 min-w-[280px]">
+                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search by name, skill or headline..."
+                  className="h-10 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 outline-none transition-all focus:border-[#6D4AFF] focus:shadow-[0_0_0_4px_rgba(109,74,255,0.08)]"
+                />
+              </div>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'best_fit' | 'newest')}
-                className="h-9 min-w-[150px] rounded border border-[#D8D6CE] bg-white px-4 text-[12px] text-[#555555]"
+                className="h-10 rounded-xl border border-neutral-200 bg-white px-4 text-sm text-neutral-600 outline-none transition-all focus:border-[#6D4AFF]"
               >
-                <option value="best_fit">⇅ Best fit</option>
-                <option value="newest">⇅ Newest</option>
+                <option value="best_fit">Best fit</option>
+                <option value="newest">Newest</option>
               </select>
               <button
                 type="button"
                 onClick={() => setVerifiedOnly((v) => !v)}
-                className={`h-9 rounded border px-4 text-[12px] transition-colors ${
-                  verifiedOnly ? 'border-[#6B5FD6] bg-[#EDE9FB] text-[#6B5FD6]' : 'border-[#D8D6CE] bg-white text-[#555555]'
+                className={`h-10 rounded-xl border px-4 text-sm font-medium transition-all ${
+                  verifiedOnly
+                    ? 'border-[#6D4AFF] bg-[#F0ECFF] text-[#6D4AFF]'
+                    : 'border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50'
                 }`}
               >
-                ✔ Verified only
+                Verified only
               </button>
             </div>
 
+            {/* Applicant cards */}
             <div className="space-y-3">
               {loading ? (
                 [...Array(3)].map((_, i) => (
-                  <div key={i} className="h-32 rounded border border-[#E2E0D8] bg-white animate-pulse" />
+                  <div key={i} className="h-36 rounded-2xl border border-neutral-200 bg-white animate-pulse" />
                 ))
               ) : visibleApplicants.length === 0 ? (
-                <div className="rounded border border-[#E2E0D8] bg-white px-8 py-16 text-center">
-                  <p className="text-sm font-bold text-[#1A1A1A]">No applicants match these filters</p>
-                  <p className="mt-1 text-xs text-[#888888]">Try clearing filters or picking a different job.</p>
+                <div className="rounded-2xl border border-neutral-200 bg-white px-8 py-16 text-center">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3">
+                    <svg className="w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H5.228A2 2 0 013 17.208V5.33a2 2 0 012-2h5.333" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-bold text-neutral-900">No applicants match these filters</p>
+                  <p className="mt-1 text-xs text-neutral-500">Try clearing filters or picking a different job.</p>
                 </div>
               ) : (
                 visibleApplicants.map((applicant, i) => (
                   <article
                     key={applicant.applicationId}
                     onClick={() => setSelectedApplicantId(applicant.applicationId)}
-                    className={`cursor-pointer rounded border bg-white p-5 transition-colors ${
-                      selectedApplicantId === applicant.applicationId ? 'border-2 border-[#6B5FD6]' : 'border-[#E2E0D8] hover:border-[#C8C6BE]'
+                    className={`cursor-pointer rounded-2xl border bg-white p-5 transition-all hover:shadow-sm ${
+                      selectedApplicantId === applicant.applicationId
+                        ? 'border-[#6D4AFF] shadow-[0_0_0_3px_rgba(109,74,255,0.08)]'
+                        : 'border-neutral-200 hover:border-neutral-300'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3">
-                        <div className={`grid h-11 w-11 place-items-center text-[13px] font-bold ${toneClasses(i)}`}>
+                        <div className={`grid h-11 w-11 place-items-center rounded-xl text-sm font-bold flex-shrink-0 ${avatarTone(i)}`}>
                           {initialsOf(applicant.fullName)}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-[#1A1A1A]">
-                            {applicant.fullName}{' '}
-                            {applicant.verified && <span className="ml-1 text-[11px] font-normal text-[#22913A]">✔</span>}
+                          <p className="text-sm font-bold text-neutral-900">
+                            {applicant.fullName}
+                            {applicant.verified && (
+                              <span className="ml-1.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600">
+                                <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 110 16A8 8 0 018 0zm3.41 5.59L7 10l-2.41-2.41L5.3 6.88 7 8.59l3.7-3.7.71.7z"/></svg>
+                              </span>
+                            )}
                           </p>
-                          <p className="text-xs text-[#666666] max-w-md truncate">{applicant.headline}</p>
+                          <p className="text-xs text-neutral-500 max-w-md truncate">{applicant.headline}</p>
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
-                        <span className="rounded border border-[#E2E0D8] bg-[#F7F6F2] px-3 py-1 text-[11px] text-[#444444]">
-                          ✦ {applicant.fitScore}% fit
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-[11px] font-medium text-neutral-700">
+                          {applicant.fitScore}% fit
                         </span>
-                        <span className={`rounded px-3 py-1 text-[11px] ${stageClasses(applicant.stage)}`}>
+                        <span className={`rounded-lg px-2.5 py-1 text-[11px] font-medium ${stageColor(applicant.stage)}`}>
                           {STAGE_LABELS[applicant.stage]}
                         </span>
                       </div>
                     </div>
 
-                    <p className="mt-3 text-[11px] text-[#888888]">
+                    <p className="mt-2.5 text-[11px] text-neutral-400">
                       Applied {formatRelativeTime(applicant.appliedAt)}
                     </p>
 
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    {/* Skills */}
+                    <div className="mt-3 flex flex-wrap gap-1.5">
                       {skillMatch(applicant).map((skill) => (
                         <span
                           key={skill.label}
-                          className={`px-2 py-1 text-[10px] ${skill.matched ? 'bg-[#E8F5EC] text-[#22913A]' : 'bg-[#F1EFE8] text-[#888888]'}`}
+                          className={`rounded-md px-2 py-0.5 text-[10px] font-medium ${
+                            skill.matched ? 'bg-emerald-50 text-emerald-700' : 'bg-neutral-100 text-neutral-500'
+                          }`}
                         >
-                          {skill.matched ? '✔' : '✗'} {skill.label}
+                          {skill.matched ? '✓' : '✗'} {skill.label}
                         </span>
                       ))}
                     </div>
 
+                    {/* Quick actions */}
                     <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
                       <button
                         type="button"
                         disabled={updatingStageId === applicant.applicationId}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStageChange(applicant.applicationId, 'rejected');
-                        }}
-                        className="h-7 rounded border border-[#D8D6CE] bg-white px-4 text-[11px] text-[#333333] hover:bg-neutral-50 disabled:opacity-50"
+                        onClick={(e) => { e.stopPropagation(); handleStageChange(applicant.applicationId, 'rejected'); }}
+                        className="h-8 rounded-lg border border-neutral-200 bg-white px-3.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
                       >
                         Reject
                       </button>
                       <button
                         type="button"
                         disabled={updatingStageId === applicant.applicationId}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStageChange(applicant.applicationId, 'shortlisted');
-                        }}
-                        className="h-7 rounded border border-[#D8D6CE] bg-white px-4 text-[11px] text-[#333333] hover:bg-neutral-50 disabled:opacity-50"
+                        onClick={(e) => { e.stopPropagation(); handleStageChange(applicant.applicationId, 'shortlisted'); }}
+                        className="h-8 rounded-lg border border-neutral-200 bg-white px-3.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
                       >
                         Shortlist
                       </button>
                       <button
                         type="button"
                         disabled={updatingStageId === applicant.applicationId}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStageChange(applicant.applicationId, 'interview');
-                        }}
-                        className="h-7 rounded bg-[#6B5FD6] px-4 text-[11px] font-bold text-white disabled:opacity-50"
+                        onClick={(e) => { e.stopPropagation(); handleStageChange(applicant.applicationId, 'interview'); }}
+                        className="h-8 rounded-lg bg-[#6D4AFF] px-4 text-xs font-bold text-white hover:brightness-95 transition-all disabled:opacity-50"
                       >
-                        Invite to interview ›
+                        Invite to interview
                       </button>
                     </div>
                   </article>
@@ -331,81 +364,139 @@ export default function ApplicantsListPage() {
             </div>
           </div>
 
-          <aside className="rounded border border-[#E2E0D8] bg-white p-4 h-fit lg:sticky lg:top-6">
+          {/* Right column — detail panel */}
+          <aside className="rounded-2xl border border-neutral-200 bg-white p-6 h-fit lg:sticky lg:top-20">
             {!selectedApplicant ? (
-              <p className="text-sm text-[#888888] text-center py-10">Select an applicant to see details.</p>
+              <div className="py-12 text-center">
+                <div className="mx-auto w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3">
+                  <svg className="w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" />
+                  </svg>
+                </div>
+                <p className="text-sm text-neutral-500">Select an applicant to see details.</p>
+              </div>
             ) : (
               <>
-                <div className="flex items-start justify-between gap-4">
+                {/* Profile header */}
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
-                    <div className="grid h-14 w-14 place-items-center bg-[#EDE9FB] text-base font-bold text-[#6B5FD6]">
+                    <div className="grid h-14 w-14 place-items-center rounded-xl bg-[#F0ECFF] text-base font-bold text-[#6D4AFF] flex-shrink-0">
                       {initialsOf(selectedApplicant.fullName)}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold">{selectedApplicant.fullName}</h3>
-                      <p className="text-xs text-[#888888] max-w-[220px]">{selectedApplicant.headline}</p>
+                      <h3 className="text-lg font-bold text-neutral-900">{selectedApplicant.fullName}</h3>
+                      <p className="text-xs text-neutral-500 max-w-[200px] leading-relaxed">{selectedApplicant.headline}</p>
                     </div>
                   </div>
-                  <span className={`rounded px-3 py-1 text-[11px] ${stageClasses(selectedApplicant.stage)}`}>
+                  <span className={`rounded-lg px-2.5 py-1 text-[11px] font-medium flex-shrink-0 ${stageColor(selectedApplicant.stage)}`}>
                     {STAGE_LABELS[selectedApplicant.stage]}
                   </span>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <div className="border border-[#E2E0D8] bg-[#F7F6F2] px-3 py-2 text-center">
-                    <p className="text-[10px] text-[#888888]">Fit score</p>
-                    <p className="mt-1 text-base font-bold">{selectedApplicant.fitScore}%</p>
+                {/* Stats grid */}
+                <div className="mt-5 grid grid-cols-2 gap-2.5">
+                  <div className="rounded-xl border border-neutral-100 bg-neutral-50 px-4 py-3 text-center">
+                    <p className="text-[10px] font-semibold text-neutral-400 uppercase">Fit score</p>
+                    <p className="mt-1 text-xl font-bold text-neutral-900">{selectedApplicant.fitScore}%</p>
                   </div>
-                  <div className="border border-[#E2E0D8] bg-[#F7F6F2] px-3 py-2 text-center">
-                    <p className="text-[10px] text-[#888888]">Applied</p>
-                    <p className="mt-1 text-base font-bold">{formatRelativeTime(selectedApplicant.appliedAt)}</p>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <p className="text-[10px] font-bold text-[#888888]">VERIFICATION</p>
-                  <div className="mt-2 space-y-1 text-[12px]">
-                    <p className={selectedApplicant.verified ? 'text-[#22913A]' : 'text-[#888888]'}>
-                      {selectedApplicant.verified ? '✔ Account verified' : '✗ Account not verified'}
-                    </p>
+                  <div className="rounded-xl border border-neutral-100 bg-neutral-50 px-4 py-3 text-center">
+                    <p className="text-[10px] font-semibold text-neutral-400 uppercase">Applied</p>
+                    <p className="mt-1 text-sm font-bold text-neutral-900">{formatRelativeTime(selectedApplicant.appliedAt)}</p>
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <p className="text-[10px] font-bold text-[#888888]">ABOUT</p>
-                  <p className="mt-2 bg-[#F7F6F2] p-3 text-[11px] text-[#666666]">{selectedApplicant.headline}</p>
+                {/* Verification */}
+                <div className="mt-5 pt-5 border-t border-neutral-100">
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Verification</p>
+                  <div className="mt-2">
+                    {selectedApplicant.verified ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 110 16A8 8 0 018 0zm3.41 5.59L7 10l-2.41-2.41L5.3 6.88 7 8.59l3.7-3.7.71.7z"/></svg>
+                        Account verified
+                      </span>
+                    ) : (
+                      <span className="text-xs text-neutral-500">Not verified</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-4">
-                  <p className="text-[10px] font-bold text-[#888888]">SKILLS MATCH</p>
-                  <div className="mt-2 flex flex-wrap gap-2 text-[10px]">
+                {/* About */}
+                <div className="mt-5 pt-5 border-t border-neutral-100">
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">About</p>
+                  <p className="mt-2 rounded-xl bg-neutral-50 p-3 text-xs text-neutral-600 leading-relaxed">{selectedApplicant.headline}</p>
+                </div>
+
+                {/* Skills */}
+                <div className="mt-5 pt-5 border-t border-neutral-100">
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Skills Match</p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {skillMatch(selectedApplicant).map((skill) => (
                       <span
                         key={skill.label}
-                        className={skill.matched ? 'bg-[#E8F5EC] px-2 py-1 text-[#22913A]' : 'text-[#888888]'}
+                        className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+                          skill.matched ? 'bg-emerald-50 text-emerald-700' : 'bg-neutral-100 text-neutral-500'
+                        }`}
                       >
-                        {skill.matched ? '✔' : '✗'} {skill.label}
+                        {skill.matched ? '✓' : '✗'} {skill.label}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (selectedApplicant.stage === 'offer' || selectedApplicant.stage === 'hired') {
-                      const result = await offerAction.getOfferByApplication(selectedApplicant.applicationId);
-                      if (result.success) router.push(`/Features/Offer/${result.data.id}`);
-                    } else {
-                      setShowOfferModal(true);
-                    }
-                  }}
-                  className="mt-4 h-9 w-full rounded bg-[#6B5FD6] text-[13px] font-bold text-white disabled:opacity-50"
-                >
-                  {selectedApplicant.stage === 'offer' || selectedApplicant.stage === 'hired'
-                    ? '💬 View offer & negotiation'
-                    : '✍ Select & make offer'}
-                </button>
+                {/* Actions */}
+                <div className="mt-6 space-y-2.5">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (selectedApplicant.stage === 'offer' || selectedApplicant.stage === 'hired') {
+                        const result = await offerAction.getOfferByApplication(selectedApplicant.applicationId);
+                        if (result.success) router.push(`/Features/offer/offernegotiation/${result.data.id}`);
+                      } else {
+                        setShowOfferModal(true);
+                      }
+                    }}
+                    className="h-10 w-full rounded-xl bg-gradient-to-br from-[#7C5CFF] to-[#6D4AFF] text-sm font-bold text-white shadow-[0_4px_12px_rgba(109,74,255,0.25)] hover:brightness-95 transition-all"
+                  >
+                    {selectedApplicant.stage === 'offer' || selectedApplicant.stage === 'hired'
+                      ? 'View offer & negotiation'
+                      : 'Select & make offer'}
+                  </button>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      disabled={updatingStageId === selectedApplicant.applicationId}
+                      onClick={() => handleStageChange(selectedApplicant.applicationId, 'shortlisted')}
+                      className="h-9 rounded-xl border border-neutral-200 bg-white text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                    >
+                      Shortlist
+                    </button>
+                    <button
+                      type="button"
+                      disabled={updatingStageId === selectedApplicant.applicationId}
+                      onClick={() => handleStageChange(selectedApplicant.applicationId, 'interview')}
+                      className="h-9 rounded-xl border border-neutral-200 bg-white text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                    >
+                      Interview
+                    </button>
+                    <button
+                      type="button"
+                      disabled={updatingStageId === selectedApplicant.applicationId}
+                      onClick={() => handleStageChange(selectedApplicant.applicationId, 'hired')}
+                      className="h-9 rounded-xl border border-neutral-200 bg-white text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                    >
+                      Hired
+                    </button>
+                    <button
+                      type="button"
+                      disabled={updatingStageId === selectedApplicant.applicationId}
+                      onClick={() => handleStageChange(selectedApplicant.applicationId, 'rejected')}
+                      className="h-9 rounded-xl border border-red-100 bg-white text-xs font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
 
                 {showOfferModal && (
                   <SendOfferModal
@@ -415,41 +506,6 @@ export default function ApplicantsListPage() {
                     onClose={() => setShowOfferModal(false)}
                   />
                 )}
-
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    disabled={updatingStageId === selectedApplicant.applicationId}
-                    onClick={() => handleStageChange(selectedApplicant.applicationId, 'shortlisted')}
-                    className="h-8 rounded border border-[#D8D6CE] bg-white text-[12px] text-[#333333] disabled:opacity-50"
-                  >
-                    Shortlist
-                  </button>
-                  <button
-                    type="button"
-                    disabled={updatingStageId === selectedApplicant.applicationId}
-                    onClick={() => handleStageChange(selectedApplicant.applicationId, 'interview')}
-                    className="h-8 rounded border border-[#D8D6CE] bg-white text-[12px] text-[#333333] disabled:opacity-50"
-                  >
-                    Interview
-                  </button>
-                  <button
-                    type="button"
-                    disabled={updatingStageId === selectedApplicant.applicationId}
-                    onClick={() => handleStageChange(selectedApplicant.applicationId, 'hired')}
-                    className="h-8 rounded border border-[#D8D6CE] bg-white text-[12px] text-[#333333] disabled:opacity-50"
-                  >
-                    Hired
-                  </button>
-                  <button
-                    type="button"
-                    disabled={updatingStageId === selectedApplicant.applicationId}
-                    onClick={() => handleStageChange(selectedApplicant.applicationId, 'rejected')}
-                    className="h-8 rounded border border-[#D8D6CE] bg-white text-[12px] text-[#333333] disabled:opacity-50"
-                  >
-                    Reject
-                  </button>
-                </div>
               </>
             )}
           </aside>

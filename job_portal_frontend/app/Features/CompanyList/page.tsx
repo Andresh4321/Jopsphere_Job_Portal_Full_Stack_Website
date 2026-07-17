@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { companyAction } from '../../../lib/actions/company.action';
 import { CompanyListItem } from '../../../lib/types/company.types';
+import { getBackendImageUrl } from '../../../lib/utils/image-url';
 import AppHeader from '../../components/appheader';
 
 function CompanyCardSkeleton() {
@@ -21,13 +22,21 @@ function CompanyCardSkeleton() {
 }
 
 function CompanyCard({ company }: { company: CompanyListItem }) {
+  const logoSrc = company.companyLogo
+    ? getBackendImageUrl(company.companyLogo)
+    : '/company.png';
+
   return (
     <Link href={`/Features/CompanyProfile/${company.companyId}`}>
       <article className="h-full rounded border border-neutral-200 bg-white p-7 transition-all hover:border-[#BCAEFF] hover:shadow-[0_4px_16px_rgba(109,74,255,0.08)]">
         <div className="flex items-start gap-5">
-          <div className="relative h-13.5 w-13.5 flex-shrink-0 rounded bg-[#F0ECFF]">
-            <div className="absolute left-4.75 top-3.5 h-7.5 w-4.25 border-[2.5px] border-[#6D4AFF]" />
-            <div className="absolute left-6 top-5.5 h-2 w-2.25 border-2 border-[#6D4AFF]" />
+          <div className="h-14 w-14 flex-shrink-0 rounded-xl bg-[#F0ECFF] overflow-hidden flex items-center justify-center border border-neutral-100">
+            <img
+              src={logoSrc}
+              alt={company.companyName}
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).src = '/company.png'; }}
+            />
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-[19px] font-bold text-neutral-900">{company.companyName}</h3>

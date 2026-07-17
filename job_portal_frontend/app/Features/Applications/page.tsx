@@ -7,12 +7,13 @@ import { SeekerApplication, ApplicationStage, STAGE_LABELS, APPLICATION_STAGE_OR
 import { formatRelativeTime } from '../../../lib/utils/job-format';
 import AppHeader from '../../components/appheader';
 import { offerAction } from '../../../lib/actions/offer.action';
+import { ROUTES } from '../../../lib/route';
 
 
 const navigationItems = [
-  { label: 'Find Jobs', href: '/Features/find_jobs' },
-  { label: 'My Applications', href: '/Features/Applications', active: true },
-  { label: 'Salary Explorer', href: '/Features/salary_explorer' },
+  { label: 'Find Jobs', href: ROUTES.findJobs },
+  { label: 'My Applications', href: ROUTES.myApplications, active: true },
+  { label: 'Salary Explorer', href: ROUTES.salaryExplorer },
 ];
 
 const STAGE_STYLES: Record<ApplicationStage, string> = {
@@ -166,7 +167,7 @@ function TimelinePanel({ app }: { app: SeekerApplication | null }) {
             <button
               onClick={async () => {
                 const result = await offerAction.getOfferByApplication(app.id);
-                if (result.success) router.push(`/Features/Offer/${result.data.id}`);
+                if (result.success) router.push(`/Features/offer/offernegotiation/${result.data.id}`);
               }}
               className="w-full rounded-xl bg-[#148A50] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
@@ -174,7 +175,7 @@ function TimelinePanel({ app }: { app: SeekerApplication | null }) {
             </button>
           )}
           <button
-            onClick={() => router.push(`/Features/job_profile/${app.jobId}`)}
+            onClick={() => router.push(ROUTES.jobProfile(app.jobId))}
             className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-700"
           >
             View job
@@ -227,7 +228,7 @@ export default function ApplicationsPage() {
           </div>
 
           <a
-            href="/Features/find_jobs"
+            href={ROUTES.findJobs}
             className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-100"
           >
             Find more jobs

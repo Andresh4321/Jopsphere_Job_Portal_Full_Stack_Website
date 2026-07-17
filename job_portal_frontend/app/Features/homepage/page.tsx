@@ -1,19 +1,9 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import Register from "../../Features/Register/page";
-const KaamIcon = () => (
-  <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-    <rect width="38" height="38" rx="12" fill="#6D4AFF" />
-    <path d="M11 16h16v14H11V16Z" stroke="white" strokeWidth="2" fill="none" />
-    <path
-      d="M15 16v-5a4 4 0 0 1 8 0v5"
-      stroke="white"
-      strokeWidth="2"
-      fill="none"
-      strokeLinecap="round"
-    />
-  </svg>
+import { ROUTES } from "../../../lib/route";
+const JopsphereIcon = () => (
+  <img src="/logo.png" alt="Jopsphere" className="w-[38px] h-[38px] rounded-[10px] object-contain" />
 );
 
 const categories = [
@@ -76,20 +66,23 @@ export default function HomePage() {
         zIndex: 10,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32 }}>
-          <KaamIcon />
-          <span style={{ fontSize: 28, fontWeight: 700, color: "#171717" }}>Kaam</span>
+          <JopsphereIcon />
+          <span style={{ fontSize: 28, fontWeight: 700, color: "#171717" }}>Jopsphere</span>
         </div>
         <nav style={{ display: "flex", gap: 32, flex: 1 }}>
-          {["Find Jobs", "My Applications", "Salary Explorer", "For Employers", "Applicants"].map((item) => (
-            <a key={item} href="#" style={{ fontSize: 15, color: "#737373", textDecoration: "none" }}
-              onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "#171717")}
-              onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "#737373")}
-            >{item}</a>
+          {[
+            { label: "Find Jobs", href: ROUTES.findJobs },
+            { label: "Salary Explorer", href: ROUTES.salaryExplorer },
+            { label: "Companies", href: ROUTES.companyList },
+          ].map((item) => (
+            <Link key={item.label} href={item.href} style={{ fontSize: 15, color: "#737373", textDecoration: "none" }}>
+              {item.label}
+            </Link>
           ))}
         </nav>
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <a href="/Features/Register" style={{ fontSize: 15, color: "#171717", textDecoration: "none" }}>Sign up</a>
-          <Link href="/Features/login">
+          <Link href={ROUTES.register} style={{ fontSize: 15, color: "#171717", textDecoration: "none" }}>Sign up</Link>
+          <Link href={ROUTES.login}>
   <button
     style={{
       background: "#6D4AFF",
@@ -153,17 +146,19 @@ export default function HomePage() {
             </p>
 
             <div style={{ display: "flex", gap: 12, marginBottom: 48 }}>
-              <button style={{
+              <Link href={ROUTES.findJobs} style={{
                 background: "#6D4AFF", color: "#fff", border: "none",
                 borderRadius: 10, padding: "12px 28px",
                 fontSize: 15, fontWeight: 700, cursor: "pointer",
-              }}>Find Jobs</button>
-              <button style={{
+                textDecoration: "none", display: "inline-block",
+              }}>Find Jobs</Link>
+              <Link href={ROUTES.register} style={{
                 background: "#fff", color: "#171717",
                 border: "1px solid #D4D4D4",
                 borderRadius: 10, padding: "12px 28px",
                 fontSize: 15, fontWeight: 700, cursor: "pointer",
-              }}>Post a Job</button>
+                textDecoration: "none", display: "inline-block",
+              }}>Post a Job</Link>
             </div>
 
             {/* Stats bar */}
@@ -281,14 +276,14 @@ export default function HomePage() {
           <h2 style={{ fontSize: 34, fontWeight: 800, color: "#171717", margin: 0 }}>
             Featured categories
           </h2>
-          <button style={{
+          <Link href={ROUTES.findJobs} style={{
             background: "#fff", border: "1px solid #D4D4D4",
             borderRadius: 10, padding: "10px 22px",
             fontSize: 14, fontWeight: 700, color: "#171717",
-            cursor: "pointer",
+            cursor: "pointer", textDecoration: "none",
           }}>
             Browse all jobs
-          </button>
+          </Link>
         </div>
 
         <div style={{
@@ -315,13 +310,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── How Kaam Works ── */}
+      {/* ── How Jopsphere Works ── */}
       <section style={{ padding: "72px 96px" }}>
         <h2 style={{
           fontSize: 34, fontWeight: 800, color: "#171717",
           textAlign: "center", marginBottom: 40,
         }}>
-          How Kaam works
+          How Jopsphere works
         </h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
@@ -366,7 +361,7 @@ export default function HomePage() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#171717", marginBottom: 6 }}>Kaam</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#171717", marginBottom: 6 }}>Jopsphere</div>
           <div style={{ fontSize: 14, color: "#737373" }}>Nepal's first verified job portal.</div>
         </div>
         <nav style={{ display: "flex", gap: 32 }}>
@@ -377,7 +372,7 @@ export default function HomePage() {
             >{item}</a>
           ))}
         </nav>
-        <div style={{ fontSize: 14, color: "#737373" }}>© 2026 Kaam. Made in Nepal.</div>
+        <div style={{ fontSize: 14, color: "#737373" }}>© 2026 Jopsphere. Made in Nepal.</div>
       </footer>
 
     </div>

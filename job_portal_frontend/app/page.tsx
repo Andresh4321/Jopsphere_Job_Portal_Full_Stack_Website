@@ -15,5 +15,5 @@ import HomePage from "./Features/homepage/page";
 import OfferNegotiationPage from "./Features/offer/offernegotiation/page";
 
 export default function Home() {
-  return <OfferNegotiationPage/>;
+  return <HomePage/>;
 }

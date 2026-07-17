@@ -7,6 +7,8 @@ export interface IUser extends Document {
   password: string;
   role: UserRole;
   status: VerificationStatus;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,6 +42,14 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: Object.values(VerificationStatus),
       default: VerificationStatus.UNVERIFIED,
+    },
+    resetToken: {
+      type: String,
+      select: false,
+    },
+    resetTokenExpiry: {
+      type: Date,
+      select: false,
     },
   },
   { timestamps: true }

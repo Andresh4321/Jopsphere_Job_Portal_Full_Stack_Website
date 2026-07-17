@@ -56,7 +56,7 @@ export default function SendOfferModal({ applicationId, candidateName, jobTitle,
       return;
     }
 
-    router.push(`/Features/Offer/${result.data.id}`);
+    router.push(`/Features/offer/offernegotiation/${result.data.id}`);
   };
 
   const deadlineText = (() => {

@@ -7,6 +7,7 @@ import {
   Bookmark,
   ChevronRight,
 } from "lucide-react";
+import { ROUTES } from "../../../lib/route";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -236,7 +237,7 @@ function ApplicationsCard({
           {applications.map((app) => (
             <li key={app.jobId + app.title}>
               <Link
-                href={`/Features/job_profile/${app.jobId}`}
+                href={ROUTES.jobProfile(app.jobId)}
                 className="flex flex-wrap items-center justify-between gap-3 py-4 transition-colors hover:bg-neutral-50/60 -mx-2 px-2 rounded-lg"
               >
                 <div className="min-w-0">
@@ -296,7 +297,7 @@ function RecommendedJobsCard({ jobs }: { jobs: RecommendedJob[] }) {
           {jobs.map((job) => (
             <Link
               key={job.jobId}
-              href={`/Features/job_profile/${job.jobId}`}
+              href={ROUTES.jobProfile(job.jobId)}
               className="group relative block rounded-xl border border-neutral-200 p-4 transition-colors hover:border-neutral-300 hover:bg-neutral-50/60"
             >
               <button
@@ -402,7 +403,7 @@ function ProfileCompletenessCard({ percent }: { percent: number }) {
         Verified profiles get 3x more employer replies.
       </p>
       <Link
-        href="/Features/Applications"
+        href={ROUTES.updateJobSeekerProfile}
         className="mt-5 block rounded-lg border border-neutral-200 px-5 py-2 text-center text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50"
       >
         Complete profile
@@ -442,7 +443,7 @@ function KnowYourWorthCard() {
         See real salary ranges from verified employers in Nepal.
       </p>
       <Link
-        href="/Features/salary_explorer"
+        href={ROUTES.salaryExplorer}
         className="mt-5 block rounded-lg border border-neutral-200 px-5 py-2 text-center text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50"
       >
         Explore salaries

@@ -19,12 +19,7 @@ export default function LoginShell({ children }: { children: React.ReactNode }) 
       <header className="w-full h-[72px] fixed top-0 left-0 bg-white/90 backdrop-blur border-b border-[#EDEDED] z-20">
         <div className="max-w-7xl mx-auto h-full flex items-center px-8 lg:px-24">
           <Link href="/" className="flex items-center">
-            <div className="w-[38px] h-[38px] rounded-[10px] bg-gradient-to-br from-[#7C5CFF] to-[#6D4AFF] shadow-[0_4px_10px_rgba(109,74,255,0.28)] flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <circle cx="9" cy="5.5" r="3" stroke="white" strokeWidth="1.8" />
-                <path d="M2.5 16c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </div>
+            <img src="/logo.png" alt="Jopsphere" className="w-[38px] h-[38px] rounded-[10px] object-contain" />
             <span className="ml-3 text-[27px] font-bold text-[#171717] tracking-[-0.6px]">
               Jopsphere
             </span>
