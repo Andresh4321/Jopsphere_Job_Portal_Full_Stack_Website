@@ -32,4 +32,14 @@ router.post(
 // Response includes `redirectTo` telling the frontend which homepage to send the user to.
 router.post("/login", authController.login);
 
+// POST /api/auth/forgot-password
+// JSON body: email
+// Generates a reset token (stored in DB with expiry), in production would send email.
+router.post("/forgot-password", authController.forgotPassword);
+
+// POST /api/auth/reset-password
+// JSON body: token, newPassword
+// Validates token, updates password hash.
+router.post("/reset-password", authController.resetPassword);
+
 export default router;

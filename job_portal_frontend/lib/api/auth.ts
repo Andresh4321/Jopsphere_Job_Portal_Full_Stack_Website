@@ -71,4 +71,12 @@ export const authApi = {
 
     return res.data.data;
   },
+
+  async forgotPassword(email: string): Promise<void> {
+    await axiosClient.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, { email });
+  },
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    await axiosClient.post(AUTH_ENDPOINTS.RESET_PASSWORD, { token, newPassword });
+  },
 };

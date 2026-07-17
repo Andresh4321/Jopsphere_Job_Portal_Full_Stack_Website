@@ -229,4 +229,42 @@ export const authService = {
       },
     };
   },
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await UserModel.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      // Silently return to prevent email enumeration
+      return;
+    }
+
+    // Generate a random reset token with 1-hour expiry
+    const crypto = require("crypto");
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = resetTokenExpiry;
+    await user.save();
+
+    // In production, send email with reset link containing token
+    // For now, the token is stored and can be used via the reset-password endpoint
+    console.log(`[DEV] Password reset token for ${email}: ${resetToken}`);
+  },
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const user = await UserModel.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: new Date() },
+    }).select("+password");
+
+    if (!user) {
+      throw new HttpError(400, "Invalid or expired reset token.");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+  },
 };

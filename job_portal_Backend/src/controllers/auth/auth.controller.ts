@@ -96,4 +96,38 @@ export const authController = {
       next(error);
     }
   },
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      if (!email) throw new HttpError(400, "Email is required.");
+
+      await authService.forgotPassword(email);
+
+      // Always return success to prevent email enumeration
+      return res.status(200).json({
+        success: true,
+        message: "If an account exists with that email, a reset link has been sent.",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) throw new HttpError(400, "Token and new password are required.");
+      if (newPassword.length < 8) throw new HttpError(400, "Password must be at least 8 characters.");
+
+      await authService.resetPassword(token, newPassword);
+
+      return res.status(200).json({
+        success: true,
+        message: "Password reset successfully.",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
