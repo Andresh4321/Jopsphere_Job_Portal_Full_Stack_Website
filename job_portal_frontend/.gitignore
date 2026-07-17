@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# User-uploaded / temporary files (should not be committed)
+public/chat_attachments/
+public/company_documents/
+public/company_logos/
+public/item_photos/
+public/offer_letters/
+public/profile_images/
+public/qualification_images/

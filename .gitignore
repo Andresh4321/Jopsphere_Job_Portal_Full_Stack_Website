@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+job_portal_Backend/public/chat_attachments/
+job_portal_Backend/public/company_documents/
+job_portal_Backend/public/company_logos/
+job_portal_Backend/public/offer_letters/
+job_portal_Backend/public/profile_images/
+job_portal_Backend/public/qualification_images/
