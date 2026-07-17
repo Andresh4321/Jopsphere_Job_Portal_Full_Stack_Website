@@ -1,5 +1,5 @@
 import axiosClient from '../api/axois';
-import { Offer, OfferMessage, CreateOfferPayload, ApiResponse } from '../types/offer.types';
+import { Offer, OfferMessage, CreateOfferPayload, Conversation, ApiResponse } from '../types/offer.types';
 
 export const offerApi = {
   async createOffer(applicationId: string, payload: CreateOfferPayload): Promise<Offer> {
@@ -25,8 +25,16 @@ export const offerApi = {
     return res.data.data;
   },
 
-  async sendMessage(offerId: string, message: string): Promise<OfferMessage> {
-    const res = await axiosClient.post<ApiResponse<OfferMessage>>(`/api/offers/${offerId}/messages`, { message });
+  async sendMessage(offerId: string, message: string, attachment?: File): Promise<OfferMessage> {
+    const formData = new FormData();
+    if (message) formData.append('message', message);
+    if (attachment) formData.append('attachment', attachment);
+
+    const res = await axiosClient.post<ApiResponse<OfferMessage>>(
+      `/api/offers/${offerId}/messages`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
     return res.data.data;
   },
 
@@ -37,6 +45,11 @@ export const offerApi = {
 
   async agree(offerId: string): Promise<Offer & { justHired: boolean }> {
     const res = await axiosClient.post<ApiResponse<Offer & { justHired: boolean }>>(`/api/offers/${offerId}/agree`);
+    return res.data.data;
+  },
+
+  async getMyConversations(): Promise<Conversation[]> {
+    const res = await axiosClient.get<ApiResponse<Conversation[]>>('/api/offers/me');
     return res.data.data;
   },
 };

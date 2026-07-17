@@ -22,7 +22,24 @@ export interface OfferMessage {
   senderId: string;
   senderRole: 'job_seeker' | 'employer';
   message: string;
+  attachmentPath?: string;
+  attachmentName?: string;
+  attachmentType?: 'resume' | 'image' | 'file';
   createdAt: string;
+}
+
+export interface Conversation {
+  offerId: string;
+  jobTitle: string;
+  counterpartName: string;
+  status: OfferStatus;
+  lastMessage: {
+    text: string;
+    hasAttachment: boolean;
+    senderRole: 'job_seeker' | 'employer';
+    createdAt: string;
+  } | null;
+  updatedAt: string;
 }
 
 export interface CreateOfferPayload {

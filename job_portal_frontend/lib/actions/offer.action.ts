@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import { offerApi } from '../api/offer';
 import { CreateOfferPayload } from '../types/offer.types';
 
+
 const extractErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
     return error.response?.data?.message || error.message || 'Something went wrong. Please try again.';
@@ -47,9 +48,18 @@ export const offerAction = {
     }
   },
 
-  async sendMessage(offerId: string, message: string) {
+  async sendMessage(offerId: string, message: string, attachment?: File) {
     try {
-      const data = await offerApi.sendMessage(offerId, message);
+      const data = await offerApi.sendMessage(offerId, message, attachment);
+      return { success: true as const, data };
+    } catch (error) {
+      return { success: false as const, message: extractErrorMessage(error) };
+    }
+  },
+
+  async getMyConversations() {
+    try {
+      const data = await offerApi.getMyConversations();
       return { success: true as const, data };
     } catch (error) {
       return { success: false as const, message: extractErrorMessage(error) };

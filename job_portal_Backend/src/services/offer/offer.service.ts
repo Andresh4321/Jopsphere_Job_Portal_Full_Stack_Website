@@ -123,22 +123,36 @@ export const offerService = {
       senderId: m.senderId.toString(),
       senderRole: m.senderRole,
       message: m.message,
+      attachmentPath: m.attachmentPath,
+      attachmentName: m.attachmentName,
+      attachmentType: m.attachmentType,
       createdAt: m.createdAt,
     }));
   },
 
-  async sendMessage(offerId: string, userId: string, dto: SendOfferMessageDto) {
+  async sendMessage(
+    offerId: string,
+    userId: string,
+    dto: SendOfferMessageDto,
+    attachment?: { path: string; name: string; type: "resume" | "image" | "file" }
+  ) {
     const offer = await OfferModel.findById(offerId);
     if (!offer) throw new HttpError(404, "Offer not found.");
     const role = authorizeOfferAccess(offer, userId);
 
-    if (!dto.message?.trim()) throw new HttpError(400, "Message cannot be empty.");
+    const trimmedMessage = dto.message?.trim() ?? "";
+    if (!trimmedMessage && !attachment) {
+      throw new HttpError(400, "Message cannot be empty.");
+    }
 
     const created = await OfferMessageModel.create({
       offerId,
       senderId: userId,
       senderRole: role,
-      message: dto.message.trim(),
+      message: trimmedMessage,
+      attachmentPath: attachment?.path,
+      attachmentName: attachment?.name,
+      attachmentType: attachment?.type,
     });
 
     const payload = {
@@ -146,12 +160,54 @@ export const offerService = {
       senderId: created.senderId.toString(),
       senderRole: created.senderRole,
       message: created.message,
+      attachmentPath: created.attachmentPath,
+      attachmentName: created.attachmentName,
+      attachmentType: created.attachmentType,
       createdAt: created.createdAt,
     };
 
     emitToOffer(offerId, "message:new", payload);
 
     return payload;
+  },
+
+  // Inbox list — every offer/conversation this user (either role) is part
+  // of, with a preview of the last message. Messaging only exists once an
+  // employer has sent an offer, so this is just "all my offers".
+  async getMyConversations(userId: string, role: "job_seeker" | "employer") {
+    const offers = await OfferModel.find(
+      role === "employer" ? { employerId: userId } : { jobSeekerId: userId }
+    ).sort({ updatedAt: -1 });
+
+    const conversations = await Promise.all(
+      offers.map(async (offer) => {
+        const [job, counterpartName, lastMessage] = await Promise.all([
+          PostedJobModel.findById(offer.jobId),
+          role === "employer"
+            ? JobSeekerModel.findOne({ userId: offer.jobSeekerId }).then((p) => p?.fullName ?? "Candidate")
+            : CompanyModel.findOne({ companyId: offer.companyId }).then((c) => c?.companyName ?? "Employer"),
+          OfferMessageModel.findOne({ offerId: offer._id }).sort({ createdAt: -1 }),
+        ]);
+
+        return {
+          offerId: offer._id.toString(),
+          jobTitle: job?.jobTitle ?? "Job",
+          counterpartName,
+          status: offer.status,
+          lastMessage: lastMessage
+            ? {
+                text: lastMessage.message,
+                hasAttachment: !!lastMessage.attachmentPath,
+                senderRole: lastMessage.senderRole,
+                createdAt: lastMessage.createdAt,
+              }
+            : null,
+          updatedAt: offer.updatedAt,
+        };
+      })
+    );
+
+    return conversations;
   },
 
   async proposeSalary(offerId: string, userId: string, dto: ProposeSalaryDto) {
