@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { savedJobAction } from '../../../lib/actions/savedjob.action';
 import { SavedJob } from '../../../lib/types/savedjobs.types';
+import { ROUTES } from '../../../lib/route';
 import { WORK_TYPE_LABELS, formatSalaryRange, formatRelativeTime } from '../../../lib/utils/job-format';
 import AppHeader from '../../components/appheader';
 
@@ -32,7 +33,7 @@ export default function SavedJobsPage() {
   return (
     <main className="min-h-screen bg-[#F8F7F3]">
       <AppHeader portal="seeker" />
-      <div className="mx-auto max-w-[1200px] px-6 py-10">
+      <div className="mx-auto max-w-300 px-6 py-10">
         <div className="flex items-center justify-between">
           <h1 className="text-[32px] text-neutral-900" style={{ fontFamily: 'var(--font-serif)' }}>
             Saved jobs
@@ -56,7 +57,7 @@ export default function SavedJobsPage() {
               <p className="text-base font-bold text-neutral-900">No saved jobs yet</p>
               <p className="mt-2 text-sm text-neutral-500">Save jobs from their profile page to see them here.</p>
               <Link
-                href="/Features/Findjob"
+                href={ROUTES.findJobs}
                 className="mt-5 inline-block rounded-lg bg-[#735CC7] px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
               >
                 Explore jobs
@@ -65,7 +66,7 @@ export default function SavedJobsPage() {
           ) : (
             jobs.map((job) => (
               <div key={job.id} className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-                <Link href={`/Features/job_profile/${job.id}`} className="min-w-0 flex-1">
+                <Link href={ROUTES.jobProfile(job.id)} className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-neutral-900">{job.jobTitle}</p>
                   <p className="mt-1.5 text-xs text-neutral-500">
                     {job.companyName}
@@ -78,7 +79,7 @@ export default function SavedJobsPage() {
                   type="button"
                   onClick={() => handleUnsave(job.id)}
                   disabled={removingId === job.id}
-                  className="flex-shrink-0 rounded-lg border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-neutral-50 disabled:opacity-50"
+                  className="shrink-0 rounded-lg border border-neutral-200 px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-neutral-50 disabled:opacity-50"
                 >
                   {removingId === job.id ? 'Removing...' : 'Remove'}
                 </button>

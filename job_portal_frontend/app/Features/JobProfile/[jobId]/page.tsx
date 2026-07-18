@@ -2,19 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { jobAction } from '../../../../lib/actions/job.action';
 import { companyAction } from '../../../../lib/actions/company.action';
 import { applicationAction } from '../../../../lib/actions/application.action';
 import { savedJobAction } from '../../../../lib/actions/savedjob.action';
 import { authAction } from '../../../../lib/actions/auth.action';
 import { JobResponse } from '../../../../lib/types/job.types';
-import { PublicCompanyProfile } from '../../../../lib/types/company.types';
+import { CompanyProfileFull } from '../../../../lib/types/company.types';
 import {
   formatSalaryRange,
   WORK_TYPE_LABELS,
   formatRelativeTime,
   formatDeadline,
 } from '../../../../lib/utils/job-format';
+import { ROUTES } from '../../../../lib/route';
+import { getBackendImageUrl } from '../../../../lib/utils/image-url';
 import AppHeader from '../../../components/appheader';
 
 export default function JobProfilePage() {
@@ -23,7 +26,7 @@ export default function JobProfilePage() {
   const jobId = params.jobId as string;
 
   const [job, setJob] = useState<JobResponse | null>(null);
-  const [company, setCompany] = useState<PublicCompanyProfile | null>(null);
+  const [company, setCompany] = useState<CompanyProfileFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,7 +51,7 @@ export default function JobProfilePage() {
 
       // Enrich "About employer" with real company details rather than
       // fabricated stats — this is a second call, but only fires once.
-      const companyResult = await companyAction.getCompanyById(jobResult.data.companyId);
+      const companyResult = await companyAction.getCompanyProfile(jobResult.data.companyId);
       if (companyResult.success) {
         setCompany(companyResult.data);
       }
@@ -72,7 +75,7 @@ export default function JobProfilePage() {
 
   const handleApply = async () => {
     if (!authAction.isAuthenticated()) {
-      router.push(`/login?next=/Features/job_profile/${jobId}`);
+      router.push(`${ROUTES.login}?next=${ROUTES.jobProfile(jobId)}`);
       return;
     }
     if (authAction.getStoredRole() !== 'job_seeker') {
@@ -103,7 +106,7 @@ export default function JobProfilePage() {
 
   const handleToggleSave = async () => {
     if (!authAction.isAuthenticated()) {
-      router.push(`/login?next=/Features/job_profile/${jobId}`);
+      router.push(`${ROUTES.login}?next=${ROUTES.jobProfile(jobId)}`);
       return;
     }
     if (authAction.getStoredRole() !== 'job_seeker') return;
@@ -128,7 +131,7 @@ export default function JobProfilePage() {
         <p className="text-neutral-900 font-bold">{error || 'Job not found.'}</p>
         <button
           type="button"
-          onClick={() => router.push('/Features/find_jobs')}
+          onClick={() => router.push(ROUTES.findJobs)}
           className="text-sm font-bold text-[#6D4AFF]"
         >
           ← Back to jobs
@@ -156,7 +159,7 @@ export default function JobProfilePage() {
       <section className="mx-auto w-full max-w-312 px-4 pt-8 lg:px-0">
         <button
           type="button"
-          onClick={() => router.push('/Features/find_jobs')}
+          onClick={() => router.push(ROUTES.findJobs)}
           className="text-sm font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
         >
           ← Back to jobs
@@ -166,9 +169,13 @@ export default function JobProfilePage() {
           <div className="space-y-7">
             <article className="rounded border border-neutral-200 bg-white p-8">
               <div className="flex flex-wrap items-start gap-6">
-                <div className="relative h-17 w-17 rounded bg-[#F0ECFF] flex-shrink-0">
-                  <div className="absolute left-5.25 top-4.25 h-8.5 w-6.5 border-[3px] border-[#6D4AFF]" />
-                  <div className="absolute left-6.5 top-6.5 h-2.75 w-4 border-[2.5px] border-[#6D4AFF]" />
+                <div className="h-17 w-17 overflow-hidden rounded bg-[#F0ECFF] shrink-0 border border-neutral-100">
+                  <img
+                    src={company?.companyLogo ? getBackendImageUrl(company.companyLogo) : '/company.png'}
+                    alt={company?.companyName || job.company.companyName}
+                    className="h-full w-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/company.png'; }}
+                  />
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -211,7 +218,7 @@ export default function JobProfilePage() {
               <ul className="mt-7 space-y-5">
                 {job.responsibilities.map((item) => (
                   <li key={item} className="flex items-start gap-4 text-[15px]">
-                    <span className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 bg-[#6D4AFF]" />
+                    <span className="mt-1.5 h-2.5 w-2.5 shrink-0 bg-[#6D4AFF]" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -223,7 +230,7 @@ export default function JobProfilePage() {
               <ul className="mt-7 space-y-5">
                 {job.requirements.map((item) => (
                   <li key={item} className="flex items-start gap-4 text-[15px]">
-                    <span className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 bg-[#19A15F]" />
+                    <span className="mt-1.5 h-2.5 w-2.5 shrink-0 bg-[#19A15F]" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -311,26 +318,33 @@ export default function JobProfilePage() {
             <div className="rounded border border-neutral-200 bg-white p-8">
               <h3 className="text-2xl font-bold">About employer</h3>
 
-              <div className="mt-5 flex items-start gap-4">
-                <div className="relative h-13.5 w-13.5 rounded bg-[#F0ECFF] flex-shrink-0">
-                  <div className="absolute left-4.75 top-3.75 h-7 w-4.25 border-[2.5px] border-[#6D4AFF]" />
+              <Link
+                href={ROUTES.companyProfile(job.company.companyId)}
+                className="mt-5 flex items-start gap-4 rounded-xl border border-transparent p-2 -m-2 transition-colors hover:border-[#BCAEFF] hover:bg-[#FAFAFA]"
+              >
+                <div className="h-13.5 w-13.5 overflow-hidden rounded bg-[#F0ECFF] shrink-0 border border-neutral-100">
+                  <img
+                    src={company?.companyLogo ? getBackendImageUrl(company.companyLogo) : '/company.png'}
+                    alt={company?.companyName || job.company.companyName}
+                    className="h-full w-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/company.png'; }}
+                  />
                 </div>
-                <div>
-                  <p className="text-[17px] font-bold">{job.company.companyName}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[17px] font-bold">{company?.companyName || job.company.companyName}</p>
+                  <p className="mt-1 text-[13px] text-neutral-500">
+                    {company ? `${company.industry} · ${company.headquarters}` : 'View company profile'}
+                  </p>
                   {job.company.companyVerified ? (
                     <p className="mt-1 text-[13px] text-[#19A15F]">✓ Verified business</p>
                   ) : (
                     <p className="mt-1 text-[13px] text-neutral-400">Verification pending</p>
                   )}
+                  {company && (
+                    <p className="mt-4 text-sm text-neutral-600 line-clamp-4">{company.aboutCompany}</p>
+                  )}
                 </div>
-              </div>
-
-              {company && (
-                <>
-                  <p className="mt-5 text-sm text-neutral-500">{company.industry} · {company.headquarters}</p>
-                  <p className="mt-4 text-sm text-neutral-600 line-clamp-4">{company.aboutCompany}</p>
-                </>
-              )}
+              </Link>
             </div>
           </aside>
         </div>

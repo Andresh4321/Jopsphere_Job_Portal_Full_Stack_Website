@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { companyAction } from '../../../../lib/actions/company.action';
+import { ROUTES } from '../../../../lib/route';
 import { CompanyProfileFull } from '../../../../lib/types/company.types';
 import { formatSalaryRange, WORK_TYPE_LABELS, formatRelativeTime } from '../../../../lib/utils/job-format';
 import { getBackendImageUrl } from '../../../../lib/utils/image-url';
@@ -84,7 +85,7 @@ export default function CompanyProfilePage() {
         <div className="mt-6 rounded border border-neutral-200 bg-white p-8">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div className="flex items-start gap-7">
-              <div className="h-18 w-18 rounded-xl bg-[#F0ECFF] flex-shrink-0 overflow-hidden flex items-center justify-center border-2 border-neutral-100">
+                <div className="h-18 w-18 rounded-xl bg-[#F0ECFF] shrink-0 overflow-hidden flex items-center justify-center border-2 border-neutral-100">
                 <img
                   src={profile.companyLogo ? getBackendImageUrl(profile.companyLogo) : '/company.png'}
                   alt={profile.companyName}
@@ -140,7 +141,7 @@ export default function CompanyProfilePage() {
                   {profile.openRoles.map((role) => (
                     <Link
                       key={role.id}
-                      href={`/Features/job_profile/${role.id}`}
+                      href={ROUTES.jobProfile(role.id)}
                       className="block rounded border border-neutral-200 bg-white p-6 transition-colors hover:border-[#BCAEFF]"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">

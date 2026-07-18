@@ -148,3 +148,4 @@ job_portal_Backend/public/company_logos/
 job_portal_Backend/public/offer_letters/
 job_portal_Backend/public/profile_images/
 job_portal_Backend/public/qualification_images/
+job_portal_Backend/seed.ts

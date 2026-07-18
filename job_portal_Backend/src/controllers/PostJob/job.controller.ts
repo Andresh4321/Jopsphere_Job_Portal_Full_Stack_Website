@@ -51,10 +51,13 @@ export const jobController = {
 
   async listAllJobs(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      const { status, workType } = req.query;
+      const { status, workType, minSalary, verifiedOnly, sort } = req.query;
       const jobs = await jobService.listAllJobs({
         status: status as JobStatus | undefined,
         workType: workType as string | undefined,
+        minSalary: minSalary ? Number(minSalary) : undefined,
+        verifiedOnly: verifiedOnly === 'true' || undefined,
+        sort: (sort as 'newest' | 'salary_desc') || undefined,
       });
       return res.status(200).json({ success: true, data: jobs });
     } catch (error) {
